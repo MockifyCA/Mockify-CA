@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SPOM Practice — CA Final</title>
+<!-- Google Fonts removed: blocked by artifact sandbox CORS policy. Using system fonts. -->
+<style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:      #1a2a4e;
+  --navy-d:    #0f1c38;
+  --navy-m:    #243560;
+  --navy-l:    #2f4680;
+  --orange:    #d4580a;
+  --orange-l:  #f5e8dc;
+  --orange-m:  #f0c8a0;
+  --gold:      #b8860b;
+  --gold-l:    #fdf8ec;
+  --gold-m:    #f5e099;
+  --white:     #ffffff;
+  --off-white: #f7f8fa;
+  --bg:        #eef0f4;
+  --panel:     #ffffff;
+  --ink:       #1a1a2e;
+  --ink2:      #3a3a5c;
+  --ink3:      #6b6b8a;
+  --ink4:      #9a9ab0;
+  --green:     #1a7a3c;
+  --green-l:   #e6f5ed;
+  --red:       #c0392b;
+  --red-l:     #fdecea;
+  --amber:     #c47a0a;
+  --amber-l:   #fef6e4;
+  --blue:      #1e5fa8;
+  --blue-l:    #e4edf8;
+  --border:    #c8cdd8;
+  --border-l:  #dde1ea;
+  --sh:        0 1px 4px rgba(26,42,78,.10), 0 1px 2px rgba(26,42,78,.06);
+  --sh-m:      0 4px 16px rgba(26,42,78,.12), 0 2px 8px rgba(26,42,78,.07);
+  --sh-l:      0 16px 48px rgba(26,42,78,.18), 0 4px 16px rgba(26,42,78,.10);
+  --r:  4px;
+  --r2: 3px;
+  --r3: 2px;
+  --font:  'Segoe UI', system-ui, -apple-system, sans-serif;
+  --serif: Georgia, 'Times New Roman', serif;
+  --mono:  'Courier New', Consolas, monospace;
+  --exam-header-h: 52px;
+  --exam-footer-h: 56px;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font-family: inherit; }
+button { cursor: pointer; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+#pre-exam-overlay {
+  position: fixed; inset: 0; width: 100vw; height: 100vh;
+  z-index: 99999; display: flex; align-items: center; justify-content: center;
+  background: rgba(10, 15, 35, 0.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  opacity: 1; transition: opacity 400ms ease; pointer-events: all;
+}
+#pre-exam-overlay.fade-out { opacity: 0; pointer-events: none; }
+#pre-exam-overlay.hidden { display: none; }
+.countdown-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+@keyframes countIn { from { opacity: 0; transform: scale(0.82); } to { opacity: 1; transform: scale(1); } }
+@keyframes labelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.countdown-number {
+  font-family: var(--serif); font-size: clamp(72px, 18vw, 140px); font-weight: 600;
+  color: #ffffff; line-height: 1;
+  text-shadow: 0 4px 32px rgba(0,0,0,0.5), 0 0 80px rgba(212, 88, 10, 0.4);
+  letter-spacing: -2px; animation: countIn 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.countdown-label {
+  font-family: var(--font); font-size: clamp(18px, 4vw, 26px); font-weight: 600;
+  color: rgba(255,255,255,0.75); letter-spacing: 3px; text-transform: uppercase;
+  margin-top: 4px; min-height: 1.4em;
+  animation: labelIn 0.45s 0.1s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.page { display: none; }
+.page.active { display: block; animation: pageIn .18s ease-out forwards; }
+#page-exam.active {
+  display: flex !important; flex-direction: column;
+  width: 100%; height: 100vh; overflow: hidden; animation: none !important;
+}
+@keyframes pageIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+body.exam-mode #topbar { display: none; }
+body.exam-mode { overflow: hidden; }
+
+/* ── TOPBAR ── */
+#topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--navy-d);
+  border-bottom: 3px solid var(--orange);
+}
+.topbar-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; height: 62px; background: var(--navy-d);
+}
+.logo { display: flex; align-items: center; gap: 14px; }
+.logo-emblem {
+  width: 44px; height: 44px; background: var(--orange); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 18px; font-weight: 600; color: white;
+  border: 2px solid rgba(255,255,255,.25); flex-shrink: 0;
+}
+.logo-text { display: flex; flex-direction: column; }
+.logo-name { font-family: var(--serif); font-size: 19px; font-weight: 600; color: #ffffff; letter-spacing: .3px; line-height: 1.1; }
+.logo-sub { font-size: 11px; color: rgba(255,255,255,.55); letter-spacing: .5px; font-weight: 400; }
+
+.topbar-nav {
+  background: var(--navy-m); border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; padding: 0 28px; height: 38px; gap: 2px;
+}
+.tb-link {
+  padding: 0 16px; height: 38px; display: inline-flex; align-items: center;
+  border: none; background: transparent; color: rgba(255,255,255,.7);
+  font-size: 13px; font-weight: 500; letter-spacing: .2px;
+  border-bottom: 3px solid transparent; transition: color .15s, border-color .15s; margin-bottom: -1px;
+}
+.tb-link:hover { color: white; border-bottom-color: var(--orange); }
+
+/* ── LANDING ── */
+#page-landing { background: var(--bg); }
+.landing-inner { max-width: 1400px; width: 95%; margin: 0 auto; padding: 0 28px 80px; }
+
+.page-title-bar {
+  background: var(--navy); color: white;
+  padding: 22px 28px 20px; border-bottom: 2px solid var(--orange); margin-bottom: 28px;
+}
+.landing-inner .page-title-bar { margin-left: -28px; margin-right: -28px; }
+.ptb-breadcrumb { font-size: 12px; color: rgba(255,255,255,.55); margin-bottom: 6px; letter-spacing: .3px; }
+.ptb-title { font-family: var(--serif); font-size: 24px; font-weight: 400; color: white; letter-spacing: .2px; }
+.ptb-sub { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 4px; }
+
+.hero { padding: 0 0 28px; }
+.hero-layout { display: grid; grid-template-columns: 2fr 1.2fr; gap: 40px; align-items: start; }
+
+.hero-card {
+  background: var(--panel); border: 1px solid var(--border);
+  border-top: 3px solid var(--orange); padding: 28px 28px 24px; box-shadow: var(--sh);
+}
+.hero-card-title { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--navy); margin-bottom: 10px; }
+.hero-card p { font-size: 14px; color: var(--ink3); line-height: 1.8; margin-bottom: 20px; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 22px; border-radius: var(--r);
+  background: var(--navy); color: white; border: none; font-size: 13.5px; font-weight: 600;
+  letter-spacing: .2px; transition: background .15s;
+}
+.btn-primary:hover { background: var(--navy-l); }
+.btn-primary-orange {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 22px; border-radius: var(--r);
+  background: var(--orange); color: white; border: none; font-size: 13.5px; font-weight: 600;
+  letter-spacing: .2px; transition: background .15s;
+}
+.btn-primary-orange:hover { background: #bf4d09; }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: var(--r);
+  background: white; color: var(--navy); border: 1px solid var(--border); font-size: 13.5px; font-weight: 500;
+  transition: all .15s;
+}
+.btn-secondary:hover { background: var(--off-white); border-color: var(--navy); }
+
+.hero-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.hero-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--navy-d); color: rgba(255,255,255,.85);
+  border-radius: 2px; padding: 4px 10px; font-size: 12px; font-weight: 500; letter-spacing: .3px;
+}
+
+.hero-info-panel { display: flex; flex-direction: column; gap: 14px; }
+.info-box { background: var(--panel); border: 1px solid var(--border); padding: 16px; box-shadow: var(--sh); }
+.info-box-title {
+  font-size: 12px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
+  color: var(--navy); border-bottom: 1px solid var(--border);
+  padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+}
+.info-box-title::before { content: ''; width: 3px; height: 14px; background: var(--orange); display: inline-block; border-radius: 2px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; border-bottom: 1px dotted var(--border-l); }
+.info-row:last-child { border-bottom: none; }
+.info-label { color: var(--ink3); }
+.info-val { font-weight: 600; color: var(--ink); }
+.notice-text {
+  font-size: 12.5px; color: var(--ink2); line-height: 1.7;
+  background: var(--gold-l); border: 1px solid var(--gold-m); padding: 10px 12px; border-left: 3px solid var(--gold);
+}
+
+.why-section { background: transparent; border: none; padding: 0; margin-bottom: 28px; box-shadow: none; }
+.why-section-header {
+  font-family: var(--serif); font-size: 11px; font-weight: 600; color: var(--ink4);
+  letter-spacing: .6px; margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border); text-transform: uppercase;
+}
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.why-item {
+  background: #ffffff; border: 1px solid #e4e9f0; border-radius: 6px; padding: 20px 20px 22px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(26,42,78,.05), 0 2px 8px rgba(26,42,78,.04);
+  transition: transform .22s ease, box-shadow .22s ease;
+}
+.why-item:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(26,42,78,.10), 0 2px 6px rgba(26,42,78,.06); }
+.why-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--orange); border-radius: 6px 6px 0 0; }
+.why-item-number { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--orange); letter-spacing: .8px; margin-bottom: 10px; opacity: .7; }
+.why-item h4 { font-family: var(--serif); font-size: 14.5px; font-weight: 600; margin-bottom: 8px; color: var(--navy); line-height: 1.3; }
+.why-item p { font-size: 12.5px; color: var(--ink3); line-height: 1.75; margin: 0; }
+
+#exam-details-content { transition: opacity .28s ease; }
+#exam-details-content.fading { opacity: 0; pointer-events: none; }
+
+.mock-mode-card.mock-selected-30 { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(30,95,168,.20), 0 6px 20px rgba(30,95,168,.25); transform: translateY(-2px); }
+.mock-mode-card.mock-selected-50 { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,122,60,.20), 0 6px 20px rgba(26,122,60,.25); transform: translateY(-2px); }
+
+.syllabus-panel-label { font-size: 10px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--ink4); margin: 14px 0 7px; }
+.syllabus-panel-label:first-child { margin-top: 2px; }
+.syllabus-chapter-list { list-style: none; padding: 0; margin: 0 0 4px; }
+.syllabus-chapter-list li { display: flex; align-items: flex-start; gap: 7px; font-size: 12.5px; color: var(--ink2); padding: 5px 0; border-bottom: 1px dotted var(--border-l); line-height: 1.45; }
+.syllabus-chapter-list li:last-child { border-bottom: none; }
+.syllabus-chapter-list li::before { content: '›'; color: var(--orange); font-weight: 700; font-size: 14px; flex-shrink: 0; line-height: 1.3; }
+
+.btn-start-mock {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; margin-top: 16px; padding: 12px 16px; color: #fff; border: none;
+  border-radius: var(--r); font-family: var(--font); font-size: 13.5px; font-weight: 700;
+  letter-spacing: .25px; cursor: pointer; transition: filter .15s ease, transform .12s ease, box-shadow .15s ease;
+}
+.btn-start-mock:hover { filter: brightness(1.13); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.2); }
+.btn-start-mock:active { transform: translateY(0); filter: brightness(.97); }
+
+.landing-footer {
+  border-top: 2px solid var(--navy); padding: 20px 0; margin-top: 40px;
+  text-align: center; font-size: 12px;
+  background: var(--navy-d); margin-left: -28px; margin-right: -28px;
+  padding-left: 28px; padding-right: 28px; color: rgba(255,255,255,.45);
+}
+
+/* ── EXAM PAGE ── */
+#page-exam { background: #f0f0f0; }
+
+.exam-header {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 56px; background: var(--navy-d);
+  border-bottom: 2px solid var(--orange); z-index: 80; gap: 12px;
+}
+.exam-left { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.exam-set-name { font-size: 13px; font-weight: 700; letter-spacing: .3px; color: #ffffff; text-transform: uppercase; }
+.exam-candidate { font-size: 12.5px; color: rgba(255,255,255,.55); padding-left: 14px; border-left: 1px solid rgba(255,255,255,.15); }
+
+.exam-centre { display: flex; align-items: center; gap: 16px; flex: 1; justify-content: center; }
+.exam-progress-pill {
+  display: flex; align-items: center; gap: 0;
+  background: rgba(255,255,255,.08); border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.12); overflow: hidden;
+}
+.epp-segment { padding: 4px 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+.epp-segment:first-child { border-right: 1px solid rgba(255,255,255,.12); }
+.epp-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.epp-dot-ans  { background: #6ee7b7; }
+.epp-dot-rem  { background: rgba(255,255,255,.3); }
+.epp-num  { color: white; }
+.epp-lbl  { color: rgba(255,255,255,.45); font-weight: 400; margin-left: 2px; }
+
+.autosave-indicator { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: rgba(255,255,255,.4); transition: color .3s; }
+.autosave-indicator.saving { color: #fcd34d; }
+.autosave-indicator.saved  { color: #6ee7b7; }
+.autosave-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; transition: background .3s; }
+.autosave-indicator.saving .autosave-dot { animation: autosavePulse .6s ease infinite; }
+@keyframes autosavePulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.exam-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.exam-timer {
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 17px; font-weight: 600;
+  color: rgba(255,255,255,.9); letter-spacing: 2px;
+  background: rgba(255,255,255,.07); border-radius: 4px;
+  padding: 5px 12px; border: 1px solid rgba(255,255,255,.1); transition: all .3s;
+}
+.exam-timer-icon { font-size: 12px; opacity: 0.5; }
+.exam-timer.danger { color: #ff8a8a; background: rgba(192,57,43,.2); border-color: rgba(192,57,43,.4); }
+.exam-timer.danger .exam-timer-text { animation: timerPulse 1s ease infinite; }
+@keyframes timerPulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.btn-submit-exam {
+  padding: 7px 18px; background: var(--orange); color: white;
+  border: none; border-radius: var(--r); font-size: 13px; font-weight: 700; letter-spacing: .2px;
+  transition: background .15s, transform .1s, box-shadow .15s;
+  box-shadow: 0 2px 8px rgba(212,88,10,.35);
+}
+.btn-submit-exam:hover { background: #bf4d09; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(212,88,10,.45); }
+.btn-submit-exam:active { transform: translateY(0); }
+
+.exam-middle { flex: 1; display: grid; grid-template-columns: 1fr 280px; overflow: hidden; min-height: 0; }
+.exam-main { overflow-y: auto; background: #f0f0f0; min-height: 0; padding: 16px 20px; }
+
+.scenario-box { background: #fffef5; border: 1px solid #d8ce70; border-left: 4px solid #b8a020; margin-bottom: 16px; overflow: hidden; }
+.scenario-label {
+  font-size: 10px; font-weight: 800; color: #7a6a00; letter-spacing: .8px; text-transform: uppercase;
+  padding: 7px 16px; background: #f5efbb; border-bottom: 1px solid #d8ce70;
+  display: flex; align-items: center; gap: 8px;
+}
+.scenario-label::before { content: ''; display: inline-block; width: 16px; height: 2px; background: #b8a020; border-radius: 1px; }
+.scenario-text { font-size: 13.5px; line-height: 1.85; color: #1e1e10; padding: 14px 18px; font-family: var(--font); }
+
+.q-block { background: #ffffff; border: 1px solid #c4c4c4; margin-bottom: 10px; }
+.q-header { display: flex; align-items: flex-start; gap: 10px; padding: 14px 16px 0; }
+.q-num { font-family: 'Source Code Pro', monospace; font-size: 10.5px; font-weight: 600; color: white; background: #1a1a2e; padding: 3px 8px; border-radius: 2px; flex-shrink: 0; margin-top: 2px; }
+.q-text { font-size: 13.5px; font-weight: 500; line-height: 1.65; color: #1a1a1a; padding-bottom: 12px; }
+
+.options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px 14px 14px; border-top: 1px solid #e0e0e0; background: #f8f8f8; }
+.option {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+  background: #ffffff; border: 1.5px solid #c8c8c8; cursor: pointer;
+  font-size: 13px; color: #222222; transition: border-color .12s, background .12s;
+  text-align: left; line-height: 1.5;
+}
+.option:hover { border-color: #555; background: #f0f0f0; }
+.option:active { background: #e8e8e8; }
+.option.sel { border-color: #1a2a4e; background: #e8eef8; border-left: 3px solid #1a2a4e; }
+.opt-tag {
+  width: 24px; height: 24px; border: 1.5px solid #aaaaaa;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+  color: #555; flex-shrink: 0; background: #f0f0f0;
+  transition: border-color .12s, background .12s, color .12s;
+}
+.option:hover .opt-tag  { border-color: #333; background: #333; color: white; }
+.option.sel   .opt-tag  { border-color: #1a2a4e; background: #1a2a4e; color: white; }
+.opt-label { flex: 1; }
+
+.q-case-bar { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #666; margin-bottom: 8px; padding: 0 2px; flex-wrap: wrap; }
+.q-case-label { font-weight: 700; color: #333; }
+.q-case-chapter { color: #555; }
+.q-case-progress { color: #888; }
+.q-case-sep { color: #ccc; }
+
+.case-separator { grid-column: 1 / -1; font-size: 9px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: rgba(255,255,255,.4); padding: 6px 0 2px; border-top: 1px solid rgba(255,255,255,.08); margin-top: 2px; }
+.case-separator:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+
+.case-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #888; margin-bottom: 10px; flex-wrap: wrap; }
+.crumb-sep { color: #ccc; }
+.case-meta { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; flex-wrap: wrap; }
+.badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 2px; letter-spacing: .3px; }
+.badge-gray { background: #f5f5f5; color: #444; border: 1px solid #d0d0d0; }
+.badge-green { background: #e6f5ed; color: #1a5c2e; border: 1px solid #8ecfa8; }
+.badge-amber { background: #fef6e4; color: #7a5000; border: 1px solid #f5e099; }
+.badge-red { background: #fdecea; color: #8b1a1a; border: 1px solid #f0a8a3; }
+
+#page-exam .case-breadcrumb, #page-exam .case-meta { display: none !important; }
+
+/* ── Sidebar ── */
+.exam-sidebar { background: var(--navy-m); border-left: 1px solid rgba(255,255,255,.08); overflow-y: auto; padding: 0; min-height: 0; }
+.exam-sidebar::-webkit-scrollbar-track { background: var(--navy-m); }
+.exam-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); }
+.sb-header { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.12); font-size: 11px; font-weight: 800; letter-spacing: .9px; text-transform: uppercase; color: rgba(255,255,255,.85); background: var(--navy-d); }
+.sb-section { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sb-title { font-size: 10px; font-weight: 800; letter-spacing: .8px; text-transform: uppercase; color: rgba(255,255,255,.55); margin-bottom: 10px; }
+.progress-info { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.82); margin-bottom: 8px; letter-spacing: .1px; }
+.progress-info span:first-child { color: #6ee7b7; }
+.progress-info span:last-child  { color: rgba(255,255,255,.65); }
+.leg-item { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.80); line-height: 1.4; }
+
+.cases-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.case-cell {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 600; cursor: pointer;
+  background: #fdecea; color: #8b1a1a; border: 1.5px solid #f0a8a3; transition: opacity .1s;
+}
+.case-cell:hover { opacity: 0.8; }
+.case-cell:active { opacity: 0.6; }
+.case-cell.cur { background: #111111; border-color: #111111; color: white; font-weight: 800; }
+.case-cell.ans { background: #1a7a3c; border-color: #158030; color: white; }
+.case-cell.mrk { background: #c47a0a; border-color: #a86500; color: white; }
+
+.prog-track { height: 5px; background: rgba(255,255,255,.1); border-radius: 2px; overflow: hidden; }
+.prog-fill { height: 100%; background: #22c55e; border-radius: 2px; transition: width .3s ease; }
+.legend { display: flex; flex-direction: column; gap: 7px; }
+.leg-dot { width: 11px; height: 11px; border-radius: 2px; flex-shrink: 0; }
+
+/* ── Footer ── */
+.exam-footer {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 8px 20px; background: #1a1a2e; border-top: 1px solid rgba(255,255,255,.1);
+  z-index: 80; min-height: var(--exam-footer-h);
+}
+.btn-nav {
+  display: inline-flex; align-items: center; gap: 6px; padding: 9px 24px;
+  background: #2f4680; border: 1px solid rgba(255,255,255,.15);
+  color: #ffffff; font-size: 13px; font-weight: 700; letter-spacing: .3px;
+  transition: background .12s; cursor: pointer;
+}
+.btn-nav:hover { background: #3a5590; }
+.btn-nav:active { background: #243560; }
+.btn-nav:disabled { opacity: .3; pointer-events: none; }
+.btn-mark {
+  display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px;
+  background: transparent; border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.65); font-size: 13px; font-weight: 600; letter-spacing: .2px;
+  transition: all .12s; cursor: pointer;
+}
+.btn-mark:hover { background: rgba(196,122,10,.2); border-color: #c47a0a; color: #fcd34d; }
+.btn-mark.active { background: rgba(196,122,10,.25); border-color: #c47a0a; color: #fcd34d; }
+
+/* ── Result ── */
+#page-result { background: var(--bg); }
+.result-inner { max-width: 720px; margin: 0 auto; padding: 0 28px 80px; }
+.result-eyebrow { font-size: 11.5px; color: var(--ink4); letter-spacing: .6px; margin-bottom: 5px; padding-top: 4px; font-family: var(--mono); }
+.result-title { font-family: var(--serif); font-size: 30px; font-weight: 400; margin-bottom: 4px; color: var(--navy); }
+.result-meta-text { font-size: 13px; color: var(--ink3); margin-bottom: 24px; }
+.score-hero { background: var(--navy-d); color: white; border-bottom: 3px solid var(--orange); padding: 28px 32px; margin-bottom: 16px; display: flex; align-items: center; gap: 40px; flex-wrap: wrap; }
+.score-pct { font-family: var(--serif); font-size: 64px; font-weight: 400; line-height: 1; letter-spacing: -1px; margin-bottom: 8px; }
+.score-tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; }
+.tag-poor  { background: rgba(220,53,69,.25); color: #ff8a8a; border: 1px solid rgba(220,53,69,.4); }
+.tag-mod   { background: rgba(255,193,7,.2); color: #ffd04d; border: 1px solid rgba(255,193,7,.4); }
+.tag-ready { background: rgba(40,167,69,.2); color: #6ee7b7; border: 1px solid rgba(40,167,69,.4); }
+.score-stats { display: flex; gap: 28px; flex-wrap: wrap; flex: 1; }
+.sstat-num { font-family: var(--mono); font-size: 24px; font-weight: 500; }
+.sstat-lbl { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 2px; }
+.result-card { background: var(--panel); border: 1px solid var(--border); margin-bottom: 14px; overflow: hidden; }
+.result-card-title { font-size: 12.5px; font-weight: 700; color: white; background: var(--navy); padding: 9px 16px; letter-spacing: .3px; text-transform: uppercase; }
+.result-card-body { padding: 18px 16px; }
+.chap-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 13px; }
+.chap-name { min-width: 175px; color: var(--ink2); flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chap-track { flex: 1; height: 8px; background: var(--bg); border-radius: 2px; overflow: hidden; border: 1px solid var(--border-l); }
+.chap-fill { height: 100%; border-radius: 2px; transition: width .5s ease; }
+.chap-pct { font-family: var(--mono); font-size: 11.5px; font-weight: 600; min-width: 34px; text-align: right; }
+.time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.time-cell { background: var(--off-white); border: 1px solid var(--border); padding: 14px; }
+.time-val { font-family: var(--mono); font-size: 20px; font-weight: 600; margin-bottom: 4px; color: var(--navy); }
+.time-lbl { font-size: 12px; color: var(--ink3); }
+.result-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+/* ── Modals ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(10,18,40,.55); backdrop-filter: blur(4px);
+  z-index: 300; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .25s cubic-bezier(.4,0,.2,1);
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+  background: var(--panel); border: 1px solid var(--border); border-top: 3px solid var(--navy);
+  padding: 0; width: 90%; max-width: 400px; box-shadow: var(--sh-l);
+  transform: translateY(16px) scale(.97);
+  transition: transform .28s cubic-bezier(.22,.68,0,1.2), opacity .25s ease; opacity: 0;
+}
+.modal-overlay.open .modal-box { transform: translateY(0) scale(1); opacity: 1; }
+.modal-header { background: var(--navy); color: white; padding: 14px 20px; }
+.modal-title { font-family: var(--serif); font-size: 18px; color: white; }
+.modal-body { font-size: 13.5px; color: var(--ink3); line-height: 1.65; padding: 18px 20px 16px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; padding: 0 20px 16px; }
+.modal-cancel { padding: 8px 18px; background: transparent; border: 1px solid var(--border); border-radius: var(--r); color: var(--ink2); font-size: 13px; transition: all .15s; }
+.modal-cancel:hover { background: var(--off-white); }
+.modal-confirm { padding: 8px 18px; background: var(--navy); color: white; border: none; border-radius: var(--r); font-size: 13px; font-weight: 600; transition: background .15s; }
+.modal-confirm:hover { background: var(--navy-l); }
+
+/* ── Toast ── */
+#toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 500;
+  background: var(--navy-d); color: white; border-left: 4px solid var(--orange);
+  padding: 11px 16px; font-size: 13px; font-weight: 500;
+  display: flex; align-items: center; gap: 9px;
+  transform: translateY(12px); opacity: 0; pointer-events: none;
+  transition: all .22s cubic-bezier(.4,0,.2,1); box-shadow: var(--sh-m); max-width: 340px;
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+.t-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+#toast.t-success .t-dot { background: #6ee7b7; }
+#toast.t-error   .t-dot { background: #ff8a8a; }
+#toast.t-error { border-left-color: var(--red); }
+
+/* ── Feedback ── */
+#page-feedback { background: var(--bg); }
+.feedback-inner { max-width: 860px; margin: 0 auto; padding: 0 28px 80px; }
+.feedback-intro-card { background: var(--panel); border: 1px solid var(--border); border-top: 3px solid var(--green); padding: 22px 24px; margin-bottom: 20px; box-shadow: var(--sh); display: flex; align-items: flex-start; gap: 18px; }
+.feedback-intro-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+.feedback-intro-title { font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+.feedback-intro-sub { font-size: 13.5px; color: var(--ink3); line-height: 1.7; }
+.feedback-form-shell { background: var(--panel); border: 1px solid var(--border); overflow: hidden; box-shadow: var(--sh); }
+.feedback-form-header { background: var(--navy); color: white; padding: 10px 18px; font-size: 13px; font-weight: 700; letter-spacing: .3px; display: flex; align-items: center; justify-content: space-between; }
+.feedback-form-header span { opacity: .55; font-size: 12px; font-weight: 400; }
+.feedback-form-embed { display: block; width: 100%; border: none; min-height: 780px; }
+.feedback-fallback { padding: 48px 28px; text-align: center; }
+.feedback-fallback-msg { font-size: 14px; color: var(--ink3); margin-bottom: 20px; line-height: 1.7; }
+.feedback-open-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 26px; background: var(--green); color: white; border: none; border-radius: var(--r); font-size: 13.5px; font-weight: 700; letter-spacing: .2px; text-decoration: none; cursor: pointer; transition: background .15s; }
+.feedback-open-btn:hover { background: #145a2d; }
+.result-feedback-card { background: var(--panel); border: 1px solid var(--border); border-top: 3px solid var(--green); margin-top: 24px; overflow: hidden; }
+.result-feedback-header { background: var(--navy); color: white; padding: 9px 16px; font-size: 12.5px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; }
+.result-feedback-body { padding: 18px 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.result-feedback-body p { font-size: 13.5px; color: var(--ink2); line-height: 1.7; flex: 1; }
+.result-feedback-body p strong { color: var(--navy); }
+.btn-feedback-inline { display: inline-flex; align-items: center; gap: 7px; padding: 9px 20px; background: var(--green); color: white; border: none; border-radius: var(--r); font-size: 13px; font-weight: 700; white-space: nowrap; flex-shrink: 0; cursor: pointer; transition: background .15s; }
+.btn-feedback-inline:hover { background: #145a2d; }
+
+/* ── Mock Mode Cards ── */
+.mock-mode-list { display: flex; flex-direction: column; gap: 10px; }
+.mock-mode-card { border: 1px solid var(--border); border-left: 4px solid var(--border); background: var(--off-white); box-shadow: var(--sh); position: relative; overflow: hidden; transition: border-color .15s, box-shadow .15s; }
+.mock-mode-practice { border-left-color: var(--blue); }
+.mock-mode-practice:hover { box-shadow: var(--sh-m); }
+.mock-mode-growth   { border-left-color: var(--green); }
+.mock-mode-growth:hover   { box-shadow: var(--sh-m); }
+.mock-mode-locked   { border-left-color: var(--border); opacity: .72; cursor: default; }
+.mmc-body { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; }
+.mmc-left  { flex: 1; min-width: 0; }
+.mmc-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+.mmc-title { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--navy); line-height: 1.2; }
+.mmc-coverage { font-size: 11px; font-weight: 700; letter-spacing: .3px; padding: 2px 8px; border-radius: 2px; white-space: nowrap; }
+.mmc-coverage-practice { background: var(--blue-l);  color: var(--blue);  border: 1px solid #b8d0ef; }
+.mmc-coverage-growth   { background: var(--green-l); color: var(--green); border: 1px solid #9dd4b4; }
+.mmc-coverage-full     { background: var(--off-white); color: var(--ink4); border: 1px solid var(--border); }
+.mmc-desc { font-size: 12.5px; color: var(--ink3); line-height: 1.5; }
+.mmc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
+.mmc-duration { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--ink3); background: var(--panel); border: 1px solid var(--border); padding: 3px 10px; border-radius: 2px; white-space: nowrap; }
+.mmc-duration-icon { opacity: .65; }
+.mmc-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: var(--r); font-size: 13px; font-weight: 700; letter-spacing: .2px; border: none; cursor: pointer; transition: background .15s; }
+.mmc-btn-locked { background: var(--off-white); color: var(--ink4); border: 1px solid var(--border) !important; cursor: not-allowed; }
+.mmc-coming-soon-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(247,248,250,.88); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); z-index: 2; }
+.mmc-coming-soon-inner { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.mmc-lock-icon { font-size: 18px; margin-bottom: 2px; opacity: .55; filter: grayscale(1); }
+.mmc-coming-soon-title { font-size: 13px; font-weight: 800; color: var(--ink2); letter-spacing: .5px; text-transform: uppercase; }
+.mmc-coming-soon-sub { font-size: 11.5px; color: var(--ink4); max-width: 240px; line-height: 1.5; margin-top: 2px; }
+
+@media(max-width: 900px) {
+  .why-grid { grid-template-columns: 1fr; gap: 16px; }
+  .hero-layout { grid-template-columns: 1fr; }
+  .hero-info-panel { display: none; }
+}
+@media(max-width: 768px) {
+  .topbar-top { padding: 0 16px; }
+  .topbar-nav { padding: 0 16px; }
+  .tb-link { padding: 0 10px; font-size: 12px; }
+  .exam-middle { grid-template-columns: 1fr; }
+  .exam-sidebar { display: none; }
+  .exam-header { flex-wrap: wrap; height: auto; padding: 10px 16px; gap: 8px; }
+  .exam-footer { padding: 6px 12px; }
+  .btn-nav { padding: 8px 14px; font-size: 12.5px; }
+  .btn-mark { padding: 7px 12px; font-size: 12px; }
+  .landing-inner { padding-left: 16px; padding-right: 16px; }
+  .result-inner { padding: 0 16px 60px; }
+  .score-hero { flex-direction: column; gap: 20px; }
+  .time-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 540px) {
+  .mmc-body { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .mmc-right { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
+}
+</style>
+</head>
+<body>
+
+<!-- PRE-EXAM COUNTDOWN OVERLAY -->
+<div id="pre-exam-overlay" class="hidden" aria-live="assertive" aria-label="Countdown">
+  <div class="countdown-stage" id="countdown-stage">
+    <div class="countdown-number" id="countdown-number">5</div>
+    <div class="countdown-label" id="countdown-label"></div>
+  </div>
+</div>
+
+<!-- ════════ TOPBAR ════════ -->
+<div id="topbar">
+  <div class="topbar-top">
+    <div class="logo">
+      <div class="logo-emblem">ꙅ</div>
+      <div class="logo-text">
+        <span class="logo-name">SPOM Practice Portal</span>
+        <span class="logo-sub">Self-Paced Online Module · CA Final</span>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-nav" id="main-nav">
+    <button class="tb-link" onclick="nav('landing')">🏠 Home</button>
+    <button class="tb-link" onclick="nav('feedback')">📋 Feedback</button>
+    <!-- Start Mock Test button removed from header — mock starts from syllabus panel -->
+  </div>
+</div>
+
+<!-- ════════ LANDING ════════ -->
+<div id="page-landing" class="page active">
+  <div class="landing-inner">
+
+    <div class="page-title-bar">
+      <div class="ptb-breadcrumb">ICAI » CA Final » SPOM Practice</div>
+      <div class="ptb-title">SPOM Mock Test — CA Final (Set A &amp; Set B)</div>
+      <div class="ptb-sub">Case-based MCQ practice under strict exam conditions</div>
+    </div>
+
+    <section class="hero">
+      <div class="hero-layout">
+        <div>
+          <div class="hero-card">
+            <div class="hero-card-title">Start Your Mock Test</div>
+            <p>Choose a practice mode suited to where you are in your preparation. Each mode is designed to build specific exam readiness under ICAI SPOM conditions.</p>
+
+            <!-- Set Selector -->
+            <div class="field" style="margin-bottom:20px">
+              <label style="font-size:12px;font-weight:600;color:var(--ink2);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px">Select Paper / Set</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="radio-card sel" onclick="pickSet(this,'A')" data-set="A" style="flex:1;min-width:180px;display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--blue-l);border:2px solid var(--blue);border-radius:var(--r);cursor:pointer;text-align:left">
+                  <div class="radio-dot" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--blue);background:var(--blue);flex-shrink:0"></div>
+                  <div>
+                    <div style="font-size:13px;font-weight:600;color:var(--navy)">Set A — Corporate &amp; Economic Laws</div>
+                    <div style="font-size:11.5px;color:var(--ink3)">Companies Act, SEBI, FEMA, IBC</div>
+                  </div>
+                </button>
+                <button class="radio-card" onclick="pickSet(this,'B')" data-set="B" style="flex:1;min-width:180px;display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--white);border:2px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:left">
+                  <div class="radio-dot" style="width:14px;height:14px;border-radius:50%;border:2px solid var(--border);background:transparent;flex-shrink:0"></div>
+                  <div>
+                    <div style="font-size:13px;font-weight:600;color:var(--navy)">Set B — Strategic Cost &amp; Performance Management</div>
+                    <div style="font-size:11.5px;color:var(--ink3)">ABC, Transfer Pricing, Budgeting, BSC</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Mode Cards -->
+            <div class="mock-mode-list">
+
+              <div class="mock-mode-card mock-mode-practice" onclick="openSyllabusPreview('P30')" style="cursor:pointer">
+                <div class="mmc-body">
+                  <div class="mmc-left">
+                    <div class="mmc-title-row">
+                      <span class="mmc-title">Practice Mode</span>
+                      <span class="mmc-coverage mmc-coverage-practice">30% Syllabus</span>
+                    </div>
+                    <div class="mmc-desc">Quick focused practice to build consistency.</div>
+                  </div>
+                  <div class="mmc-right">
+                    <div class="mmc-duration"><span class="mmc-duration-icon">⏱</span> 45 Minutes</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mock-mode-card mock-mode-growth" onclick="openSyllabusPreview('G50')" style="cursor:pointer">
+                <div class="mmc-body">
+                  <div class="mmc-left">
+                    <div class="mmc-title-row">
+                      <span class="mmc-title">Growth Mode</span>
+                      <span class="mmc-coverage mmc-coverage-growth">50% Syllabus</span>
+                    </div>
+                    <div class="mmc-desc">Improve coverage &amp; exam stamina.</div>
+                  </div>
+                  <div class="mmc-right">
+                    <div class="mmc-duration"><span class="mmc-duration-icon">⏱</span> 90 Minutes</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mock-mode-card mock-mode-locked">
+                <div class="mmc-body">
+                  <div class="mmc-left">
+                    <div class="mmc-title-row">
+                      <span class="mmc-title">Full Mock — Exam Simulation</span>
+                      <span class="mmc-coverage mmc-coverage-full">100% Syllabus</span>
+                    </div>
+                    <div class="mmc-desc">Complete ICAI pattern simulation — all chapters, full duration.</div>
+                  </div>
+                  <div class="mmc-right">
+                    <div class="mmc-duration"><span class="mmc-duration-icon">⏱</span> 3 Hours</div>
+                    <button class="mmc-btn mmc-btn-locked" disabled>Locked</button>
+                  </div>
+                </div>
+                <div class="mmc-coming-soon-overlay">
+                  <div class="mmc-coming-soon-inner">
+                    <div class="mmc-lock-icon">&#128274;</div>
+                    <div class="mmc-coming-soon-title">Coming Soon</div>
+                    <div class="mmc-coming-soon-sub">Full ICAI pattern simulation will be available shortly.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /.mock-mode-list -->
+
+            <div class="hero-pills" style="margin-top:18px">
+              <span class="hero-pill">📋 Case-based Format</span>
+              <span class="hero-pill">⏱ Strict Timer</span>
+              <span class="hero-pill">📊 Performance Analysis</span>
+              <span class="hero-pill">✓ No Distractions</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-info-panel">
+          <div class="info-box" id="exam-details-box">
+            <div class="info-box-title" id="exam-details-title">Why Practice Here?</div>
+            <div id="exam-details-content">
+              <div style="padding:6px 0 4px">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                  <span style="color:var(--green)">✔</span>
+                  <span style="font-size:13px;color:var(--ink2)">Based on ICAI SPOM Pattern</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                  <span style="color:var(--green)">✔</span>
+                  <span style="font-size:13px;color:var(--ink2)">Case Study Based Questions</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                  <span style="color:var(--green)">✔</span>
+                  <span style="font-size:13px;color:var(--ink2)">Updated as per Latest Attempt</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="color:var(--green)">✔</span>
+                  <span style="font-size:13px;color:var(--ink2)">Designed for CA Final Students</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="info-box">
+            <div class="info-box-title">Important Notice</div>
+            <div class="notice-text">
+              This is an unofficial practice portal for CA Final students. Not affiliated with ICAI. All questions are for practice purposes only.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="why-section">
+      <div class="why-section-header">Why Case-Based Practice Matters</div>
+      <div class="why-grid">
+        <div class="why-item">
+          <div class="why-item-number">01 — EXAM NATURE</div>
+          <h4>SPOM is Application-Heavy</h4>
+          <p>ICAI does not test memory. It tests your ability to apply law and concepts to real business scenarios under time pressure. Rote learning will not work here.</p>
+        </div>
+        <div class="why-item">
+          <div class="why-item-number">02 — QUESTION DESIGN</div>
+          <h4>MCQs Are Deceptively Tricky</h4>
+          <p>All four options are designed to appear plausible. The correct answer depends entirely on reading the case carefully — one missed detail changes everything.</p>
+        </div>
+        <div class="why-item">
+          <div class="why-item-number">03 — TIME MANAGEMENT</div>
+          <h4>3 Hours Goes Faster Than You Think</h4>
+          <p>Most students run short on time in the actual exam. Practicing under strict CBT conditions builds the speed and composure needed on exam day.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════ EXAM ════════ -->
+<div id="page-exam" class="page">
+
+  <div class="exam-header">
+    <div class="exam-left">
+      <span class="exam-set-name" id="exam-set-label">Set A — Corporate Law</span>
+      <span class="exam-candidate" id="exam-user-label">—</span>
+    </div>
+    <div class="exam-centre">
+      <div class="exam-progress-pill">
+        <div class="epp-segment">
+          <div class="epp-dot epp-dot-ans"></div>
+          <span class="epp-num" id="hdr-answered">0</span>
+          <span class="epp-lbl">answered</span>
+        </div>
+        <div class="epp-segment">
+          <div class="epp-dot epp-dot-rem"></div>
+          <span class="epp-num" id="hdr-remaining">—</span>
+          <span class="epp-lbl">remaining</span>
+        </div>
+      </div>
+      <div class="autosave-indicator" id="autosave-el">
+        <div class="autosave-dot"></div>
+        <span id="autosave-text">All responses saved</span>
+      </div>
+    </div>
+    <div class="exam-right">
+      <div class="exam-timer" id="timer-el">
+        <span class="exam-timer-icon">⏱</span>
+        <span class="exam-timer-text" id="timer-text">03:00:00</span>
+      </div>
+      <button class="btn-submit-exam" onclick="confirmSubmit()">Submit Test</button>
+    </div>
+  </div>
+
+  <div class="exam-middle">
+    <div class="exam-main" id="exam-main">
+      <div id="case-panel"></div>
+    </div>
+    <div class="exam-sidebar">
+      <div class="sb-header">Question Navigator</div>
+      <div class="sb-section">
+        <div class="sb-title">Progress</div>
+        <div class="progress-info">
+          <span id="sb-answered">0 answered</span>
+          <span id="sb-total">—</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" id="sb-prog" style="width:0%"></div></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-title">Cases</div>
+        <div class="cases-grid" id="q-grid"></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-title">Legend</div>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#111111"></div><span>Current Question</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#22c55e"></div><span>Answered</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#c47a0a"></div><span>Marked for Review</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#f87171"></div><span>Unanswered</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exam-footer">
+    <button class="btn-nav" id="btn-prev" onclick="navQ(-1)">&#8592; Previous</button>
+    <button class="btn-mark" id="mark-btn" onclick="toggleMark()">&#9873; Mark for Review</button>
+    <button class="btn-nav" id="btn-next" onclick="navQ(1)">Next &#8594;</button>
+  </div>
+
+</div>
+
+<!-- ════════ RESULT ════════ -->
+<div id="page-result" class="page">
+  <div class="result-inner">
+    <div class="page-title-bar" style="margin-left:-28px;margin-right:-28px">
+      <div class="ptb-breadcrumb">SPOM Practice Portal » Results</div>
+      <div class="ptb-title">Mock Test Result</div>
+    </div>
+    <div class="result-eyebrow" style="margin-top:20px">Mock Test Complete</div>
+    <div class="result-title">Your Performance Report</div>
+    <div class="result-meta-text" id="result-meta">—</div>
+    <div class="score-hero">
+      <div>
+        <div class="score-pct" id="res-pct">—</div>
+        <div class="score-tag" id="res-status">—</div>
+      </div>
+      <div class="score-stats">
+        <div class="sstat"><div class="sstat-num" id="res-correct" style="color:#6ee7b7">—</div><div class="sstat-lbl">Correct</div></div>
+        <div class="sstat"><div class="sstat-num" id="res-wrong" style="color:#ff8a8a">—</div><div class="sstat-lbl">Incorrect</div></div>
+        <div class="sstat"><div class="sstat-num" id="res-skip" style="color:rgba(255,255,255,.35)">—</div><div class="sstat-lbl">Skipped</div></div>
+        <div class="sstat"><div class="sstat-num" id="res-total">—</div><div class="sstat-lbl">Total</div></div>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-card-title">Chapter-wise Accuracy</div>
+      <div class="result-card-body" id="chap-bars"></div>
+    </div>
+    <div class="result-card">
+      <div class="result-card-title">Time Analysis</div>
+      <div class="result-card-body">
+        <div class="time-grid">
+          <div class="time-cell"><div class="time-val" id="res-avg-time">—</div><div class="time-lbl">Avg time per question</div></div>
+          <div class="time-cell"><div class="time-val" id="res-total-time">—</div><div class="time-lbl">Total time used</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-primary-orange" onclick="nav('landing')">Take Another Mock »</button>
+      <button class="btn-secondary" onclick="nav('landing')">« Back to Home</button>
+    </div>
+    <div class="result-feedback-card">
+      <div class="result-feedback-header">📋 Share Your Feedback</div>
+      <div class="result-feedback-body">
+        <p>Help us improve this platform for every CA Final student. Share what worked, what didn't, and any suggestions — <strong>it takes under 2 minutes.</strong></p>
+        <button class="btn-feedback-inline" onclick="nav('feedback')">Give Feedback →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ FEEDBACK ════════ -->
+<div id="page-feedback" class="page">
+  <div class="feedback-inner">
+    <div class="page-title-bar" style="margin-left:-28px;margin-right:-28px">
+      <div class="ptb-breadcrumb">SPOM Practice Portal » Feedback</div>
+      <div class="ptb-title">Student Feedback &amp; Suggestions</div>
+      <div class="ptb-sub">Help us build a better practice platform for every CA Final student</div>
+    </div>
+    <div style="height:24px"></div>
+    <div class="feedback-intro-card">
+      <div class="feedback-intro-icon">📋</div>
+      <div>
+        <div class="feedback-intro-title">Your feedback shapes this platform</div>
+        <div class="feedback-intro-sub">This platform is built for CA Final students. Tell us what questions felt incorrect, what features are missing, what's confusing, or anything else on your mind. Every response is read carefully and acted upon.</div>
+      </div>
+    </div>
+    <div class="feedback-form-shell">
+      <div class="feedback-form-header">
+        Feedback Form
+        <span>Powered by Google Forms · Anonymous unless you choose to share your name</span>
+      </div>
+      <iframe id="feedback-iframe" class="feedback-form-embed"
+        src="https://docs.google.com/forms/d/e/1FAIpQLSdn7vrmcXYS70Bf51eWHICGB5ZTkmOwAeJMmI_lnIESG8MmSg/viewform?embedded=true"
+        frameborder="0" marginheight="0" marginwidth="0" loading="lazy"
+        onload="handleFeedbackLoad(this)" onerror="showFeedbackFallback()"></iframe>
+      <div id="feedback-fallback" class="feedback-fallback" style="display:none">
+        <div class="feedback-fallback-msg">The feedback form could not be loaded inline.<br/>Click below to open it directly in a new tab.</div>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdn7vrmcXYS70Bf51eWHICGB5ZTkmOwAeJMmI_lnIESG8MmSg/viewform" target="_blank" rel="noopener noreferrer" class="feedback-open-btn">📋 Open Feedback Form in New Tab</a>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:var(--ink4);text-align:center;line-height:1.7">
+      Unofficial practice platform for CA Final students · Not affiliated with ICAI<br/>
+      Responses are collected via Google Forms and used solely to improve platform quality.
+    </div>
+  </div>
+</div>
+
+<!-- ════════ MODALS ════════ -->
+<div id="toast"><div class="t-dot"></div><span id="toast-msg"></span></div>
+
+<div class="modal-overlay" id="modal-instructions">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">Mock Test Instructions</div>
+    </div>
+    <div class="modal-body">
+      <ol style="padding-left:18px;margin-bottom:16px;line-height:1.8">
+        <li>This mock is designed as per ICAI SPOM case-based pattern.</li>
+        <li>Read each case scenario carefully before answering.</li>
+        <li>There is no negative marking.</li>
+        <li>Once started, the timer cannot be paused.</li>
+        <li>Do not refresh or close the browser during the test.</li>
+        <li>All responses are auto-saved automatically.</li>
+        <li>You may mark questions for review and revisit them later.</li>
+        <li><strong>The test will be auto-submitted automatically when the timer reaches zero.</strong></li>
+      </ol>
+      <div style="background:var(--amber-l);border:1px solid var(--gold-m);border-left:4px solid var(--amber);padding:10px 12px;font-size:12.5px;color:var(--ink2);border-radius:var(--r)">
+        ⚠ When time expires, the system will submit your test automatically.
+        Unattempted questions will be marked as unanswered.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="closeModal('modal-instructions')">Cancel</button>
+      <button class="modal-confirm" onclick="closeModal('modal-instructions'); startExam();">Start Test</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-header"><div class="modal-title">Submit Test?</div></div>
+    <div class="modal-body">
+      <p id="confirm-text" style="font-size:14px;line-height:1.7;color:var(--ink2);margin-bottom:20px"></p>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button onclick="closeModal('modal-confirm')" style="padding:9px 20px;border:1px solid var(--border);background:var(--panel);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer">Cancel</button>
+        <button onclick="doSubmit()" style="padding:9px 20px;background:var(--orange);border:none;border-radius:var(--r);font-size:13px;font-weight:700;color:white;cursor:pointer">Yes, Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCRIPT ════════ -->
+<script>
+
+const SYLLABUS = {
+  A: ["Appointment & Qualification of Directors","Appointment & Remuneration of Managerial Personnel","Board Meetings & Its Powers","Inspection, Inquiry & Investigation","Compromises, Arrangements & Amalgamations","Prevention of Oppression & Mismanagement","Winding Up","Miscellaneous Provisions","Adjudication, Special Courts, NCLT & NCLAT","e-Filing","SEBI Act, 1992 & Securities Regulations (LODR, ICDR, SAST, PIT)","Foreign Exchange Management Act, 1999","Foreign Contribution Regulation Act, 2010","Insolvency & Bankruptcy Code, 2016"],
+  B: ["Introduction to Strategic Cost Management","Modern Business Environment","Lean System and Innovation","Specialist Cost Management Techniques","Management of Cost for Emerging Business Models","Strategic Revenue Management","Strategic Profit Management","Introduction to Strategic Performance Management","Strategic Performance Measures – Private Sector","Strategic Performance Measures – Non-Profit Organisations","Preparation of Performance Reports","Divisional Transfer Pricing","Standard Costing","Case Study"]
+};
+
+let QUESTIONS = [
+  {id:'A001',set:'A',chapter:'Companies Act — Board & Directors',difficulty:'Medium',
+   scenario:`Zenith Technologies Ltd. is a listed public company incorporated under the Companies Act, 2013. Its Board of Directors consists of 12 directors — 4 executive directors, 4 non-executive directors, and 4 independent directors. During a Board meeting held on 15th March 2024, the following resolutions were passed: (i) Approval of a related-party transaction with a wholly-owned subsidiary for ₹180 crore; (ii) Appointment of Mr. Arjun as Managing Director for 5 years at a monthly remuneration of ₹12 lakhs; (iii) Issue of secured Non-Convertible Debentures (NCDs) worth ₹500 crore to institutional investors. The quorum for the meeting was met with 8 directors present. However, one of the independent directors, Ms. Priya, was not given proper notice of the agenda items relating to the related-party transaction.`,
+   questions:[
+     {qid:'A001Q1',text:'With respect to the related-party transaction approval at the Board meeting, which of the following statements is CORRECT under the Companies Act, 2013?',options:['The transaction is valid as it was approved by a majority of directors present.','The transaction is invalid as it required prior approval of the Audit Committee before Board approval.','The transaction is valid since it involves a wholly-owned subsidiary and no shareholder approval is required.','The transaction requires approval by special resolution of shareholders since it exceeds ₹100 crore.'],correct:1,explanation:'Under Section 177 of the Companies Act, 2013, every related-party transaction must first be approved by the Audit Committee.'},
+     {qid:'A001Q2',text:'Regarding the appointment of Mr. Arjun as Managing Director at ₹12 lakhs per month, which approval is MANDATORY?',options:['Only Board approval — no other approval needed for listed companies.','Board approval and Central Government approval since remuneration exceeds the prescribed limit.','Board approval and ordinary resolution of shareholders at the general meeting.','Board approval and special resolution of shareholders, along with Nomination & Remuneration Committee recommendation.'],correct:3,explanation:'Appointment of MD requires NRC recommendation, Board approval, and shareholder approval by special resolution under Section 196 read with Schedule V.'},
+     {qid:'A001Q3',text:'The issuance of ₹500 crore NCDs to institutional investors — which of the following is NOT a requirement under the Companies Act, 2013?',options:['Passing a Board resolution for the NCD issuance.','Creating a Debenture Redemption Reserve (DRR) for listed companies issuing NCDs to the public.','Appointing a Debenture Trustee before issuance.','Filing a return of allotment with the Registrar of Companies.'],correct:1,explanation:'Listed companies issuing debentures on private placement basis are exempt from maintaining DRR per the 2019 amendment.'}
+   ]},
+  {id:'A002',set:'A',chapter:'Companies Act — Winding Up & Insolvency',difficulty:'Hard',
+   scenario:`Omega Constructions Pvt. Ltd. has been facing severe financial distress for the past 18 months. Its total outstanding debt is ₹320 crore — comprising ₹180 crore owed to State Bank of India (a secured financial creditor) and ₹140 crore owed to 23 operational creditors. The company has defaulted on repayment for over 120 days. SBI has filed an application before the National Company Law Tribunal (NCLT) under Section 7 of the Insolvency and Bankruptcy Code, 2016 (IBC) to initiate Corporate Insolvency Resolution Process (CIRP). The NCLT admitted the application and appointed an Interim Resolution Professional (IRP). During CIRP, a Resolution Applicant — Horizon Developers Ltd. — submitted a resolution plan offering to pay ₹160 crore to all creditors.`,
+   questions:[
+     {qid:'A002Q1',text:'Under IBC 2016, what is the minimum default amount for a financial creditor to file an application under Section 7?',options:['₹1 lakh','₹10 lakh','₹1 crore','₹5 crore'],correct:2,explanation:'After the IBC amendment in 2020, the minimum default threshold was raised to ₹1 crore.'},
+     {qid:'A002Q2',text:'The Committee of Creditors (CoC) in this case is being constituted. Which of the following creditors will be part of the CoC?',options:['Only SBI, as the sole financial creditor.','All 23 operational creditors collectively.','SBI and a representative of operational creditors (if aggregate dues exceed ₹10 lakh).','SBI, operational creditors, and the Resolution Professional jointly.'],correct:2,explanation:'CoC consists of financial creditors. Operational creditors get a representative if their aggregate dues exceed ₹10 lakh.'},
+     {qid:'A002Q3',text:'The resolution plan of ₹160 crore is submitted by Horizon Developers. For the plan to be approved, the minimum voting share required from the CoC is:',options:['51%','60%','66%','75%'],correct:2,explanation:'Section 30(4) of IBC requires approval by not less than 66% of voting share of the CoC.'},
+     {qid:'A002Q4',text:'What is the maximum time period (including extensions) allowed for completion of CIRP under IBC?',options:['180 days','270 days','330 days','365 days'],correct:2,explanation:'CIRP must be completed within 180 days, extendable by 90 days, with further extension up to 330 days under judicial interpretation.'}
+   ]},
+  {id:'A003',set:'A',chapter:'SEBI Regulations',difficulty:'Medium',
+   scenario:`Regal Pharma Ltd. is a company listed on BSE and NSE. Mr. Vikram, the Chief Financial Officer of Regal Pharma, came to know about a pending merger deal with a US-based company which, if successful, would significantly boost Regal's stock price. Before the merger was publicly announced, Mr. Vikram purchased 50,000 shares of Regal Pharma in his personal account and also tipped off his close friend Mr. Sanjay, who purchased 30,000 shares. The merger was announced two weeks later and the stock price jumped 40%. SEBI initiated an investigation and found evidence of insider trading.`,
+   questions:[
+     {qid:'A003Q1',text:'Under the SEBI (Prohibition of Insider Trading) Regulations, 2015, "Unpublished Price Sensitive Information" (UPSI) includes which of the following?',options:['Quarterly financial results after they are filed with stock exchanges.','A pending merger that has not yet been publicly disclosed.','A dividend declared and announced in a press conference.','Annual report published on the company website.'],correct:1,explanation:'UPSI is information not generally available that would materially affect price if published. A pending undisclosed merger is a classic example.'},
+     {qid:'A003Q2',text:'Mr. Vikram is classified as which category of person under SEBI Insider Trading Regulations?',options:['Connected Person','Immediate Relative','Insider by virtue of being a Connected Person with access to UPSI','Third-party Trader'],correct:2,explanation:'As CFO, Mr. Vikram is a "Connected Person" under Regulation 2(1)(d) and an "Insider" under Regulation 2(1)(g).'},
+     {qid:'A003Q3',text:'What is the maximum penalty that SEBI can impose on Mr. Vikram for insider trading under SEBI Act, 1992?',options:['₹25 crore or 3 times the profit made, whichever is higher','₹25 crore or 3 times the profit made, whichever is lower','₹10 crore flat penalty','₹1 crore or 3 times the profit made, whichever is higher'],correct:0,explanation:'Under Section 15G of the SEBI Act, 1992, the penalty is ₹25 crore or three times the profits, whichever is higher.'}
+   ]},
+  {id:'A004',set:'A',chapter:'FEMA & Foreign Exchange',difficulty:'Medium',
+   scenario:`Apex Exports Ltd., an Indian company, enters into the following transactions during the financial year 2023–24: (i) Receives USD 5 million from a foreign buyer for export of software services; (ii) Makes an investment of USD 2 million in a joint venture company in Singapore; (iii) Provides a corporate guarantee of USD 1 million to a bank in UAE on behalf of its wholly-owned subsidiary. The company's Authorised Dealer (AD) bank raises queries about the compliance requirements under FEMA, 1999 and its regulations.`,
+   questions:[
+     {qid:'A004Q1',text:'The receipt of USD 5 million for software export under FEMA falls under which category of transaction?',options:['Capital Account Transaction — requires RBI approval.','Current Account Transaction — generally permissible without RBI approval.','Capital Account Transaction — permissible through AD bank.','Neither — software exports are treated separately under IT Act.'],correct:1,explanation:'Receipts from export of goods/services are Current Account Transactions under FEMA and are generally permissible without specific RBI approval.'},
+     {qid:'A004Q2',text:'The USD 2 million investment in a Singapore joint venture is classified as:',options:['Current Account Transaction — no approval needed.','Overseas Direct Investment (ODI) under Capital Account — governed by ODI Regulations.','Foreign Portfolio Investment.','External Commercial Borrowing.'],correct:1,explanation:'Investment by an Indian entity in a foreign company constitutes ODI, a Capital Account Transaction under FEMA governed by the Overseas Investment Rules, 2022.'},
+     {qid:'A004Q3',text:'The corporate guarantee of USD 1 million provided to a UAE bank on behalf of its WOS — which of the following is correct?',options:['No FEMA reporting required since it is a guarantee, not actual remittance.','Requires reporting to RBI via AD bank in Form OID within stipulated timelines.','Requires prior RBI approval as guarantees are prohibited under FEMA.','Permissible only if guaranteed amount is below USD 500,000.'],correct:1,explanation:'Under the Overseas Investment Rules, 2022, financial commitments including guarantees must be reported to RBI through the AD bank.'}
+   ]},
+  {id:'B001',set:'B',chapter:'Standard Costing & Variance Analysis',difficulty:'Medium',
+   scenario:`Prakash Steels Ltd. manufactures a single product — Steel Rod (Grade A). The standard cost card per unit is as follows: Direct Material — 5 kg @ ₹80/kg = ₹400; Direct Labour — 3 hours @ ₹60/hour = ₹180; Variable Overhead — 3 hours @ ₹20/hour = ₹60; Fixed Overhead — 3 hours @ ₹30/hour = ₹90. Standard selling price per unit = ₹800. Budgeted production for March 2024 was 2,000 units. Actual results for March 2024: Units produced = 1,800; Direct Material used = 9,500 kg at ₹78/kg; Direct Labour = 5,600 hours at ₹62/hour; Variable Overhead incurred = ₹1,15,000; Fixed Overhead incurred = ₹1,80,000.`,
+   questions:[
+     {qid:'B001Q1',text:'The Material Price Variance for March 2024 is:',options:['₹19,000 (Favourable)','₹19,000 (Adverse)','₹16,000 (Favourable)','₹16,000 (Adverse)'],correct:0,explanation:'MPV = Actual Qty × (Std Price − Actual Price) = 9,500 × (₹80 − ₹78) = ₹19,000 (F).'},
+     {qid:'B001Q2',text:'The Labour Efficiency Variance for March 2024 is:',options:['₹12,000 (Adverse)','₹12,000 (Favourable)','₹24,000 (Adverse)','₹24,000 (Favourable)'],correct:0,explanation:'Std hours = 1,800×3 = 5,400. Actual = 5,600. LEV = (5,400−5,600)×₹60 = ₹12,000 (A).'},
+     {qid:'B001Q3',text:'The Fixed Overhead Volume Variance is:',options:['₹6,000 (Favourable)','₹6,000 (Adverse)','₹18,000 (Adverse)','₹18,000 (Favourable)'],correct:2,explanation:'FOVV = (Actual prod − Budgeted prod) × Std rate = (1,800−2,000)×₹90 = ₹18,000 (A).'},
+     {qid:'B001Q4',text:'Which variance explains the difference between actual fixed overhead incurred and the budgeted fixed overhead?',options:['Fixed Overhead Volume Variance','Fixed Overhead Expenditure (Budget) Variance','Fixed Overhead Efficiency Variance','Fixed Overhead Capacity Variance'],correct:1,explanation:'Fixed Overhead Expenditure Variance = Budgeted Fixed OH − Actual Fixed OH.'}
+   ]},
+  {id:'B002',set:'B',chapter:'Marginal Costing & Decision Making',difficulty:'Medium',
+   scenario:`Nova Plastics Ltd. manufactures three products — X, Y, and Z. The following information is available for the next quarter: Product X: Selling Price ₹500, Variable Cost ₹300, Machine Hours required 4 hrs/unit, Maximum Demand 600 units. Product Y: Selling Price ₹700, Variable Cost ₹400, Machine Hours 5 hrs/unit, Maximum Demand 500 units. Product Z: Selling Price ₹600, Variable Cost ₹320, Machine Hours 6 hrs/unit, Maximum Demand 400 units. Total Machine Hours available = 6,000 hours. Fixed Costs for the quarter = ₹2,80,000.`,
+   questions:[
+     {qid:'B002Q1',text:'The contribution per machine hour (key factor ranking) for Product X, Y and Z respectively is:',options:['X = ₹50, Y = ₹60, Z = ₹46.67','X = ₹200, Y = ₹300, Z = ₹280','X = ₹50, Y = ₹60, Z = ₹43.33','X = ₹200/hr, Y = ₹60/hr, Z = ₹46.67/hr'],correct:0,explanation:'Contribution per machine hour: X=200/4=₹50, Y=300/5=₹60, Z=280/6=₹46.67.'},
+     {qid:'B002Q2',text:'Based on key factor analysis, the optimal production plan that maximises contribution is:',options:['Produce 500Y, 600X, balance Z — Contribution ₹3,88,000','Produce 500Y, 600X, 83 units of Z — Contribution ₹3,48,667','Produce 400Z, 500Y, balance X — Contribution ₹3,55,000','Produce 500Y, 600X fully, no Z — Contribution ₹3,30,000'],correct:1,explanation:'Rank: Y>X>Z. Hours: Y=2,500, X=2,400, remaining 1,100 for Z = 183 units. Total contribution optimised.'},
+     {qid:'B002Q3',text:'In a make-or-buy decision, if an outside supplier quotes ₹350 per unit for Product X and the company can use the freed capacity to produce additional Product Y — what is the maximum buy price below which outsourcing is beneficial?',options:['Below ₹300 (variable cost of X)','Below ₹350 (quoted price)','Below ₹300 + opportunity cost of freed capacity','It depends on total fixed cost savings'],correct:2,explanation:'Maximum buy price = Variable cost + Opportunity cost of capacity freed.'}
+   ]},
+  {id:'B003',set:'B',chapter:'Transfer Pricing',difficulty:'Hard',
+   scenario:`Synergy Group has two divisions — Division P (manufacturing) and Division Q (assembly). Division P produces a component that can be sold externally at ₹800 per unit. Variable cost of Division P = ₹500 per unit; Fixed cost absorbed = ₹100 per unit. Division Q requires 5,000 units of this component per quarter. If Division P transfers to Division Q, Division Q can produce a finished product sold at ₹1,500 per unit with additional variable costs of ₹400 per unit at Division Q. Division P currently operates at 80% capacity (8,000 units per quarter total capacity = 10,000 units). External demand for Division P's component is 9,000 units per quarter.`,
+   questions:[
+     {qid:'B003Q1',text:'Since Division P cannot fully meet both external demand and internal transfer — what is the minimum transfer price Division P should accept from Division Q?',options:['₹500 (variable cost only)','₹600 (full cost)','₹800 (market price — since spare capacity is limited)','₹650 (variable cost + partial opportunity cost)'],correct:2,explanation:'Division P is capacity-constrained. Min TP = VC + Opportunity cost = ₹500 + (₹800−₹500) = ₹800.'},
+     {qid:'B003Q2',text:'The maximum transfer price that Division Q would accept is:',options:['₹800 (external market price of component)','₹1,100 (Selling price of finished product less Division Q variable cost)','₹1,000','₹700'],correct:1,explanation:'Max TP = Net Marginal Revenue to Division Q = ₹1,500 − ₹400 = ₹1,100 per unit.'},
+     {qid:'B003Q3',text:'From the perspective of Synergy Group as a whole, is the internal transfer beneficial?',options:['No — because internal transfer is always at a premium to market price.','Yes — the group incremental contribution from transfer = ₹200 per unit.','No — the group loses ₹300 per unit on each transferred unit.','Cannot be determined without tax jurisdiction information.'],correct:1,explanation:'Group benefit: ₹600 (finished product contribution) vs ₹300 (external sale of component). Incremental = ₹300. Transfer price is internal and irrelevant to group P&L.'}
+   ]},
+  {id:'B004',set:'B',chapter:'Balanced Scorecard & Performance Measurement',difficulty:'Easy',
+   scenario:`TechServe Ltd. is a mid-size IT services company. Its management has decided to implement the Balanced Scorecard (BSC) framework to align its strategy with performance measurement. The company's strategic objectives include: (1) Increase revenue by 20% year-on-year; (2) Achieve 95% client retention rate; (3) Reduce project delivery time by 15%; (4) Invest in upskilling 80% of the workforce in new technologies. The CFO has asked the strategy team to map these objectives to the appropriate BSC perspectives.`,
+   questions:[
+     {qid:'B004Q1',text:'Match the objectives to the correct BSC perspective:\n(i) Increase revenue 20% YoY\n(ii) 95% client retention\n(iii) Reduce delivery time 15%\n(iv) Upskill 80% workforce',options:['(i) Financial, (ii) Customer, (iii) Internal Process, (iv) Learning & Growth','(i) Customer, (ii) Financial, (iii) Learning & Growth, (iv) Internal Process','(i) Financial, (ii) Internal Process, (iii) Customer, (iv) Learning & Growth','(i) Internal Process, (ii) Customer, (iii) Financial, (iv) Learning & Growth'],correct:0,explanation:'Financial=revenue; Customer=retention; Internal Process=delivery time; Learning & Growth=upskilling.'},
+     {qid:'B004Q2',text:'A "lag indicator" in the Balanced Scorecard context refers to:',options:['A forward-looking measure that predicts future performance.','An outcome measure that reflects past performance — e.g., revenue achieved.','A measure used exclusively in the Learning & Growth perspective.','A negative performance indicator showing areas of deterioration.'],correct:1,explanation:'Lag indicators are outcome measures reflecting what has already happened.'},
+     {qid:'B004Q3',text:'The primary criticism of traditional financial performance measurement that the BSC addresses is:',options:['That financial statements are too detailed and complex.','That financial measures are backward-looking and fail to capture intangible value drivers.','That financial measures require IFRS compliance.','That financial ratios only work for manufacturing companies.'],correct:1,explanation:'Kaplan & Norton developed BSC to overcome the limitation that traditional financial metrics are backward-looking and ignore intangible drivers.'}
+   ]},
+  {id:'B005',set:'B',chapter:'Activity Based Costing',difficulty:'Medium',
+   scenario:`Precision Metals Ltd. manufactures two products — Standard (S) and Premium (P). Total overhead costs = ₹24,00,000. Traditional costing uses machine hours to absorb overheads (Total machine hours: S = 12,000 hrs, P = 8,000 hrs). Under Activity Based Costing (ABC), three cost pools are identified: (i) Machine Setup: ₹6,00,000 — Cost driver: Number of setups (S = 40 setups, P = 60 setups); (ii) Quality Inspection: ₹9,00,000 — Cost driver: Number of inspections (S = 150, P = 100); (iii) Material Handling: ₹9,00,000 — Cost driver: Number of material movements (S = 200, P = 300). Units produced: S = 2,000 units, P = 1,000 units.`,
+   questions:[
+     {qid:'B005Q1',text:'Under Traditional Costing (machine hour basis), the overhead cost per unit of Premium (P) is:',options:['₹480','₹600','₹720','₹960'],correct:3,explanation:'OAR = ₹24,00,000/20,000 hrs = ₹120/hr. P: (8,000×₹120)/1,000 = ₹960.'},
+     {qid:'B005Q2',text:'Under ABC, the overhead cost per unit of Product S is:',options:['₹570','₹840','₹900','₹780'],correct:0,explanation:'Setup:₹2,40,000; Inspection:₹5,40,000; Material:₹3,60,000. Total S=₹11,40,000. Per unit=₹570.'},
+     {qid:'B005Q3',text:'Which of the following statements about Activity Based Costing is INCORRECT?',options:['ABC provides more accurate product costs than traditional volume-based absorption.','ABC identifies the root causes of cost through cost drivers.','ABC is most beneficial when overhead costs are a small proportion of total costs.','ABC can highlight non-value-added activities for cost reduction.'],correct:2,explanation:'ABC is most useful when overhead costs are a LARGE proportion of total costs.'}
+   ]},
+  {id:'B006',set:'B',chapter:'Budgetary Control',difficulty:'Easy',
+   scenario:`Sunrise FMCG Ltd. operates a budgetary control system. The Sales Budget for Q1 FY2024-25 was set at 1,00,000 units at ₹250 per unit. Actual sales = 95,000 units at ₹255 per unit. Production budget was 1,02,000 units (opening stock 8,000 units; closing stock target 10,000 units). Actual production = 98,000 units. Variable cost per unit (budgeted) = ₹150; Actual variable cost = ₹148 per unit. Fixed overhead budget = ₹30,00,000; Actual fixed overhead = ₹31,50,000.`,
+   questions:[
+     {qid:'B006Q1',text:'The Sales Volume Variance (in terms of contribution) is:',options:['₹5,00,000 (Adverse)','₹5,00,000 (Favourable)','₹4,75,000 (Adverse)','₹4,75,000 (Favourable)'],correct:0,explanation:'SVV = (95,000−1,00,000)×₹100 = ₹5,00,000 (A).'},
+     {qid:'B006Q2',text:'The Sales Price Variance is:',options:['₹4,75,000 (Favourable)','₹4,75,000 (Adverse)','₹5,00,000 (Favourable)','₹5,00,000 (Adverse)'],correct:0,explanation:'SPV = 95,000×(₹255−₹250) = ₹4,75,000 (F).'},
+     {qid:'B006Q3',text:'A "flexible budget" differs from a "fixed budget" primarily because:',options:['Flexible budgets are prepared quarterly while fixed budgets are annual.','Flexible budgets adjust for actual levels of activity, making variance analysis meaningful.','Flexible budgets include only variable costs while fixed budgets include all costs.','Flexible budgets are mandatory for listed companies under Ind AS.'],correct:1,explanation:'A flexible budget is recalculated at actual volume achieved, enabling fair cost comparison.'}
+   ]},
+  {id:'TST_A01',set:'A',chapter:'Appointment & Qualification of Directors',difficulty:'Medium',
+   scenario:`Vertex Infra Ltd. is a listed public company with a 12-member Board comprising 4 executive directors, 4 non-executive directors, and 4 independent directors. In March 2024, the Board held a meeting with 7 directors present. The following decisions were taken: (i) Mr. Sunil, aged 74, was proposed for appointment as an Independent Director for a second term of 5 years; (ii) The Board passed a resolution to grant a loan of ₹15 crore to a wholly-owned subsidiary; (iii) Ms. Priya was proposed as Additional Director — however, she already holds directorship in 10 other public companies. The company secretary raised compliance queries on all three matters.`,
+   questions:[
+     {qid:'TST_A01Q1',text:'Regarding the appointment of Mr. Sunil (aged 74) as Independent Director for a second term, which of the following is CORRECT under the Companies Act, 2013?',options:['His appointment is invalid — no person above 70 years can be an Independent Director.','His appointment is valid only if approved by a special resolution of shareholders.','His appointment requires Central Government approval since he exceeds the standard age.','His appointment is valid as age is not a disqualification under the Companies Act, 2013.'],correct:1,explanation:'Appointment of a person above 70 years requires approval by special resolution at the general meeting per Schedule V and SEBI LODR.'},
+     {qid:'TST_A01Q2',text:'Can Ms. Priya be validly appointed as Additional Director in Vertex Infra Ltd., given she already holds directorship in 10 other public companies?',options:['Yes — there is no restriction on the number of public company directorships.','Yes — the limit of 10 applies only to whole-time directors, not additional directors.','No — a person cannot hold directorship in more than 10 public companies simultaneously.','No — she must resign from at least 5 of her current directorships before being appointed.'],correct:2,explanation:'Section 165 limits a person to 10 public company directorships. Ms. Priya has already reached this limit.'},
+     {qid:'TST_A01Q3',text:'The Board passed a resolution to grant ₹15 crore loan to its wholly-owned subsidiary. Which of the following statements is CORRECT?',options:['Board cannot grant loans to subsidiaries — shareholder approval is always required.','Board can grant the loan; it is a matter that can also be passed via video conferencing.','The loan requires prior approval of the Audit Committee since it is a related-party transaction.','The loan is invalid unless ratified at the next Annual General Meeting.'],correct:1,explanation:'Granting loans to WOS is within Board powers under Section 186 and is not restricted from video conferencing under Rule 4.'}
+   ]},
+  {id:'TST_B01',set:'B',chapter:'Specialist Cost Management Techniques',difficulty:'Medium',
+   scenario:`Omega Components Ltd. has two divisions — Division P (manufacturing) and Division Q (assembly). Division P produces a semi-finished component at a variable cost of ₹320/unit and a fixed cost of ₹80/unit (based on capacity of 10,000 units). Division P currently sells 8,000 units externally at ₹500/unit. Division Q requires 3,000 units of this component and currently sources it externally at ₹490/unit. The management is evaluating whether Division P should supply Division Q internally. Division P has idle capacity of 2,000 units.`,
+   questions:[
+     {qid:'TST_B01Q1',text:'What is the minimum transfer price per unit that Division P should accept for the transfer to Division Q?',options:['₹320 per unit (variable cost only)','₹400 per unit (total cost)','₹490 per unit (external market price)','₹500 per unit (current selling price)'],correct:0,explanation:'For units from idle capacity, there is no opportunity cost. Min TP = Variable Cost = ₹320.'},
+     {qid:'TST_B01Q2',text:'From the perspective of the overall company (Omega Components Ltd.), what is the net benefit per unit if Division Q sources internally from Division P at ₹320 rather than externally at ₹490?',options:['₹0 — transfer pricing is purely internal and does not affect company profit.','₹170 per unit saving (₹490 − ₹320)','₹90 per unit saving (₹490 − ₹400)','₹180 per unit saving (₹500 − ₹320)'],correct:1,explanation:'Group saving = ₹490 (external cost avoided) − ₹320 (incremental cost) = ₹170 per unit.'}
+   ]},
+  {id:'TST_MIX01',set:'A',chapter:'Insolvency & Bankruptcy Code, 2016',difficulty:'Easy',
+   scenario:`Bright Steel Ltd. defaulted on debt repayment of ₹2 crore owed to its bank, State Finance Bank. The bank filed an application before the NCLT under Section 7 of the Insolvency and Bankruptcy Code, 2016 to initiate Corporate Insolvency Resolution Process (CIRP). NCLT admitted the application and appointed an Interim Resolution Professional (IRP). The total outstanding debt of Bright Steel is ₹85 crore. During CIRP, a resolution applicant submitted a plan offering ₹50 crore to settle all dues.`,
+   questions:[
+     {qid:'TST_MIX01Q1',text:'Under the IBC, 2016, what is the minimum default amount required for a financial creditor to file an application under Section 7?',options:['₹1 lakh','₹10 lakh','₹1 crore','₹5 crore'],correct:2,explanation:'After the IBC Amendment Act, 2020, the minimum default threshold was increased to ₹1 crore.'},
+     {qid:'TST_MIX01Q2',text:'What minimum voting share of the Committee of Creditors (CoC) is required to approve the resolution plan?',options:['51%','60%','66%','75%'],correct:2,explanation:'Section 30(4) of IBC requires at least 66% of voting share of the CoC to approve a resolution plan.'},
+     {qid:'TST_MIX01Q3',text:'What is the maximum time limit (including all permissible extensions) for completing CIRP under the IBC?',options:['180 days','270 days','330 days','365 days'],correct:2,explanation:'180 days + 90 day extension = 270 days, with further litigation-related extension up to 330 days.'}
+   ]}
+];
+
+const MOCK_CONFIG = {
+  P30: {
+    A: ["Appointment & Qualification of Directors","Appointment & Remuneration of Managerial Personnel","Board Meetings & Its Powers","Inspection, Inquiry & Investigation"],
+    B: ["Introduction to Strategic Cost Management","Modern Business Environment","Lean System and Innovation","Specialist Cost Management Techniques"]
+  },
+  G50: {
+    A: ["Appointment & Qualification of Directors","Appointment & Remuneration of Managerial Personnel","Board Meetings & Its Powers","Inspection, Inquiry & Investigation","Compromises, Arrangements & Amalgamations","Prevention of Oppression & Mismanagement","Insolvency & Bankruptcy Code, 2016"],
+    B: ["Introduction to Strategic Cost Management","Modern Business Environment","Lean System and Innovation","Specialist Cost Management Techniques","Management of Cost for Emerging Business Models","Strategic Revenue Management","Standard Costing"]
+  }
+};
+
+const S = {
+  currentSet: 'A', mode: 'FULL', selectedChapters: null,
+  currentQIdx: 0, answers: {}, marked: new Set(),
+  timerInterval: null, startTime: null, submitted: false,
+  _autosaveTimer: null, _qList: [], modeDuration: null
+};
+
+function nav(pageName) {
+  document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.display = ''; });
+  var target = document.getElementById('page-' + pageName);
+  if (!target) return;
+  target.classList.add('active');
+  if (pageName === 'exam') { document.body.classList.add('exam-mode'); }
+  else { document.body.classList.remove('exam-mode'); document.body.style.overflow = ''; }
+  window.scrollTo(0, 0);
+}
+
+function pickSet(el, set) {
+  document.querySelectorAll('.radio-card').forEach(c => {
+    c.classList.remove('sel'); c.style.background = 'var(--white)'; c.style.borderColor = 'var(--border)';
+    const dot = c.querySelector('.radio-dot');
+    if (dot) { dot.style.background = 'transparent'; dot.style.borderColor = 'var(--border)'; }
+  });
+  el.classList.add('sel'); el.style.background = 'var(--blue-l)'; el.style.borderColor = 'var(--blue)';
+  const dot = el.querySelector('.radio-dot');
+  if (dot) { dot.style.background = 'var(--blue)'; dot.style.borderColor = 'var(--blue)'; }
+  S.currentSet = set;
+}
+
+function buildQList(set, chapters) {
+  const sourceCases = QUESTIONS.filter(c => {
+    if (c.set !== set) return false;
+    if (chapters && chapters.length > 0) return chapters.includes(c.chapter);
+    return true;
+  });
+  const qList = [];
+  let globalQNum = 1;
+  sourceCases.forEach((cas, caseIdx) => {
+    cas.questions.forEach((q, qi) => {
+      qList.push({ ...q, caseId: cas.id, chapter: cas.chapter, scenario: cas.scenario,
+        qNum: globalQNum++, qInCase: qi + 1, qOfCase: cas.questions.length,
+        caseNum: caseIdx + 1, caseTotal: sourceCases.length });
+    });
+  });
+  return qList;
+}
+
+function openSyllabusPreview(mode) {
+  S.mode = mode;
+  S.modeDuration = mode === 'P30' ? 45 * 60 : 90 * 60;
+  const chapters = MOCK_CONFIG[mode][S.currentSet];
+  S.selectedChapters = chapters;
+
+  const label    = mode === 'P30' ? '30% Mock' : '50% Mock';
+  const duration = mode === 'P30' ? '45 mins'  : '90 mins';
+  const btnLabel = mode === 'P30' ? 'Start 30% Mock →' : 'Start 50% Mock →';
+  const btnColor = mode === 'P30' ? '#1e5fa8' : '#1a7a3c';
+  const setName  = S.currentSet === 'A' ? 'Set A — Corporate Law' : 'Set B — Strategic Cost Mgmt';
+
+  document.querySelectorAll('.mock-mode-card').forEach(c => c.classList.remove('mock-selected-30','mock-selected-50'));
+  const cards = document.querySelectorAll('.mock-mode-card');
+  if (mode === 'P30' && cards[0]) cards[0].classList.add('mock-selected-30');
+  if (mode === 'G50' && cards[1]) cards[1].classList.add('mock-selected-50');
+
+  const newContent = `
+    <div class="info-row"><span class="info-label">Duration</span><span class="info-val">${duration}</span></div>
+    <div class="info-row"><span class="info-label">Type</span><span class="info-val">MCQ · Case-based</span></div>
+    <div class="info-row"><span class="info-label">Negative Marks</span><span class="info-val">None</span></div>
+    <div style="height:1px;background:var(--border-l);margin:12px 0 10px"></div>
+    <div class="syllabus-panel-label">${escapeHtml(setName)}</div>
+    <ul class="syllabus-chapter-list">${chapters.map(ch => `<li>${escapeHtml(ch)}</li>`).join('')}</ul>
+    <button class="btn-start-mock" style="background:${btnColor}" onclick="openModal('modal-instructions')">${escapeHtml(btnLabel)}</button>`;
+
+  const container = document.getElementById('exam-details-content');
+  const titleEl   = document.getElementById('exam-details-title');
+  if (!container || !titleEl) { startExam(); return; }
+
+  container.classList.add('fading');
+  setTimeout(() => {
+    titleEl.textContent = 'Test Syllabus — ' + label;
+    container.innerHTML = newContent;
+    container.classList.remove('fading');
+    document.getElementById('exam-details-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 280);
+}
+
+function doStartFromSidebar() { startExam(); }
+function confirmSyllabusPreview() { closeModal('modal-syllabus-preview'); startExam(); }
+
+function startExam() {
+  S.currentQIdx = 0; S.answers = {}; S.marked = new Set(); S.submitted = false;
+  if (S.selectedChapters && S.selectedChapters.length > 0) {
+    S._qList = buildQList(S.currentSet, S.selectedChapters);
+  } else {
+    S._qList = buildQList(S.currentSet, null);
+  }
+  S.selectedChapters = null;
+  const setNames = { A: 'Set A — Corporate & Economic Laws', B: 'Set B — Strategic Cost & Performance Management' };
+  document.getElementById('exam-set-label').textContent  = setNames[S.currentSet] || ('Set ' + S.currentSet);
+  document.getElementById('exam-user-label').textContent = '';
+  runCountdown(() => { nav('exam'); renderExamQ(); startTimer(S.modeDuration || 3 * 60 * 60); });
+}
+
+function runCountdown(onComplete) {
+  const overlay = document.getElementById('pre-exam-overlay');
+  const wrapper = overlay.querySelector('.countdown-stage');
+  const stages  = [{num:'5',label:''},{num:'4',label:''},{num:'3',label:"Let's"},{num:'2',label:'Set'},{num:'1',label:'Go!'}];
+  document.body.style.overflow = 'hidden'; document.body.style.pointerEvents = 'none';
+  overlay.classList.remove('hidden','fade-out'); overlay.style.pointerEvents = 'all';
+  let idx = 0;
+  function showStage() {
+    const {num, label} = stages[idx];
+    wrapper.innerHTML = `<div class="countdown-number">${num}</div><div class="countdown-label">${label}</div>`;
+    void wrapper.offsetWidth;
+    idx++;
+    if (idx < stages.length) { setTimeout(showStage, 1000); }
+    else {
+      setTimeout(() => {
+        overlay.classList.add('fade-out');
+        setTimeout(() => {
+          overlay.classList.add('hidden'); overlay.classList.remove('fade-out');
+          document.body.style.overflow = ''; document.body.style.pointerEvents = '';
+          onComplete();
+        }, 420);
+      }, 1000);
+    }
+  }
+  showStage();
+}
+
+function startTimer(seconds) {
+  let remaining = seconds;
+  S.startTime = Date.now();
+  clearInterval(S.timerInterval);
+  const el = document.getElementById('timer-el');
+  const tx = document.getElementById('timer-text');
+  function tick() {
+    if (remaining <= 0) { clearInterval(S.timerInterval); doSubmit(); return; }
+    const h = String(Math.floor(remaining / 3600)).padStart(2,'0');
+    const m = String(Math.floor((remaining % 3600) / 60)).padStart(2,'0');
+    const s = String(remaining % 60).padStart(2,'0');
+    tx.textContent = h + ':' + m + ':' + s;
+    el.className = 'exam-timer' + (remaining <= 600 ? ' danger' : '');
+    remaining--;
+  }
+  tick();
+  S.timerInterval = setInterval(tick, 1000);
+}
+
+function renderExamQ() {
+  const qList = S._qList;
+  if (!qList || !qList.length) return;
+  const qi = S.currentQIdx;
+  const q  = qList[qi];
+  if (!q) return;
+
+  let gridHtml = '';
+  let lastCaseId = null, caseNum = 0;
+  qList.forEach((item, idx) => {
+    if (item.caseId !== lastCaseId) { caseNum++; gridHtml += `<div class="case-separator">Case ${caseNum}</div>`; lastCaseId = item.caseId; }
+    const isAns = S.answers[item.qid] !== undefined;
+    const isMrk = S.marked.has(item.qid);
+    const isCur = idx === qi;
+    let cls = '';
+    if (isCur) cls = 'cur'; else if (isMrk) cls = 'mrk'; else if (isAns) cls = 'ans';
+    gridHtml += `<div class="case-cell ${cls}" onclick="jumpQ(${idx})" title="Q${idx+1}">${idx+1}</div>`;
+  });
+  document.getElementById('q-grid').innerHTML = gridHtml;
+
+  const totalQs  = qList.length;
+  const answered = Object.keys(S.answers).length;
+  const remaining = totalQs - answered;
+  document.getElementById('sb-answered').textContent = answered + ' answered';
+  document.getElementById('sb-total').textContent    = totalQs + ' total';
+  document.getElementById('sb-prog').style.width     = (totalQs ? Math.round(answered/totalQs*100) : 0) + '%';
+  const hdrAns = document.getElementById('hdr-answered');
+  const hdrRem = document.getElementById('hdr-remaining');
+  if (hdrAns) hdrAns.textContent = answered;
+  if (hdrRem) hdrRem.textContent = remaining;
+
+  const isMarked = S.marked.has(q.qid);
+  const mb = document.getElementById('mark-btn');
+  mb.textContent = isMarked ? '\u2691 Marked for Review' : '\u2691 Mark for Review';
+  mb.classList.toggle('active', isMarked);
+  document.getElementById('btn-prev').disabled = qi === 0;
+  document.getElementById('btn-next').disabled = qi === qList.length - 1;
+
+  let html = '';
+  html += `<div class="q-case-bar">
+    <span class="q-case-label">Case ${q.caseNum} of ${q.caseTotal}</span>
+    <span class="q-case-sep">·</span>
+    <span class="q-case-chapter">${escapeHtml(q.chapter)}</span>
+    <span class="q-case-sep">·</span>
+    <span class="q-case-progress">Q${q.qInCase} of ${q.qOfCase} in this case</span>
+  </div>`;
+
+  html += `<div class="scenario-box">
+    <div class="scenario-label">Case Scenario</div>
+    <div class="scenario-text">${escapeHtml(q.scenario).replace(/\n/g,'<br/>')}</div>
+  </div>`;
+
+  html += `<div class="q-block">
+    <div class="q-header">
+      <span class="q-num">Q${qi+1}</span>
+      <div class="q-text">${escapeHtml(q.text)}</div>
+    </div>
+    <div class="options">`;
+  q.options.forEach((opt, oi) => {
+    const isSelected = S.answers[q.qid] === oi;
+    html += `<button class="option ${isSelected ? 'sel' : ''}" onclick="selectOpt('${q.qid}',${oi})">
+      <span class="opt-tag">${'ABCD'[oi]}</span>
+      <span class="opt-label">${escapeHtml(opt)}</span>
+    </button>`;
+  });
+  html += `</div></div>`;
+
+  document.getElementById('case-panel').innerHTML = html;
+  document.getElementById('exam-main').scrollTop = 0;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function selectOpt(qid, optIdx) { S.answers[qid] = optIdx; renderExamQ(); triggerAutosave(); }
+
+function triggerAutosave() {
+  const el = document.getElementById('autosave-el');
+  const text = document.getElementById('autosave-text');
+  if (!el || !text) return;
+  clearTimeout(S._autosaveTimer);
+  el.className = 'autosave-indicator saving'; text.textContent = 'Saving…';
+  S._autosaveTimer = setTimeout(() => {
+    el.className = 'autosave-indicator saved'; text.textContent = 'All responses saved';
+    setTimeout(() => { el.className = 'autosave-indicator'; }, 2000);
+  }, 500);
+}
+
+function navQ(dir) {
+  const next = S.currentQIdx + dir;
+  if (next < 0 || next >= S._qList.length) return;
+  S.currentQIdx = next; renderExamQ();
+}
+function jumpQ(idx) { S.currentQIdx = idx; renderExamQ(); }
+function toggleMark() {
+  const qid = S._qList[S.currentQIdx]?.qid;
+  if (!qid) return;
+  if (S.marked.has(qid)) S.marked.delete(qid); else S.marked.add(qid);
+  renderExamQ();
+}
+function navCase(dir) { navQ(dir); }
+function jumpCase(i)  { jumpQ(i); }
+
+function confirmSubmit() {
+  const totalQs = S._qList.length;
+  const answered = Object.keys(S.answers).length;
+  const unattempted = totalQs - answered;
+  document.getElementById('confirm-text').innerHTML =
+    `You have answered <strong>${answered} of ${totalQs}</strong> questions.` +
+    (unattempted > 0 ? ` <strong>${unattempted} question${unattempted>1?'s':''} unattempted.</strong>` : ' All questions answered.') +
+    `<br/><br/>This cannot be undone.`;
+  openModal('modal-confirm');
+}
+
+function doSubmit() {
+  closeModal('modal-confirm');
+  clearInterval(S.timerInterval);
+  S.submitted = true;
+  const elapsed = S.startTime ? Math.round((Date.now() - S.startTime) / 1000) : 0;
+  renderResult(elapsed);
+  nav('result');
+}
+
+function renderResult(elapsedSecs) {
+  const qList = S._qList;
+  let correct = 0, wrong = 0, total = 0;
+  const chapterMap = {};
+  qList.forEach(q => {
+    const ch = q.chapter;
+    if (!chapterMap[ch]) chapterMap[ch] = {correct:0,total:0};
+    total++; chapterMap[ch].total++;
+    if (S.answers[q.qid] === q.correct) { correct++; chapterMap[ch].correct++; }
+    else if (S.answers[q.qid] !== undefined) { wrong++; }
+  });
+  const score = total > 0 ? Math.round(correct/total*100) : 0;
+  const skipped = total - correct - wrong;
+  const avgSecs = total > 0 ? Math.round(elapsedSecs/total) : 0;
+  document.getElementById('result-meta').textContent = `Set ${S.currentSet} · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}`;
+  document.getElementById('res-pct').textContent     = score + '%';
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent   = wrong;
+  document.getElementById('res-skip').textContent    = skipped;
+  document.getElementById('res-total').textContent   = total;
+  const statusEl = document.getElementById('res-status');
+  if (score < 50) { statusEl.textContent='Needs Work'; statusEl.className='score-tag tag-poor'; }
+  else if (score < 70) { statusEl.textContent='Getting There'; statusEl.className='score-tag tag-mod'; }
+  else { statusEl.textContent='Exam Ready'; statusEl.className='score-tag tag-ready'; }
+  let barsHtml = '';
+  Object.entries(chapterMap).forEach(([ch,d]) => {
+    const pct = d.total > 0 ? Math.round(d.correct/d.total*100) : 0;
+    const color = pct>=70 ? 'var(--green)' : pct>=40 ? 'var(--amber)' : 'var(--red)';
+    barsHtml += `<div class="chap-row"><div class="chap-name" title="${ch}">${ch}</div><div class="chap-track"><div class="chap-fill" style="width:${pct}%;background:${color}"></div></div><div class="chap-pct" style="color:${color}">${pct}%</div></div>`;
+  });
+  document.getElementById('chap-bars').innerHTML = barsHtml || '<p style="color:var(--ink4);font-size:13px">No data.</p>';
+  const fmt = s => s < 60 ? s+'s' : Math.floor(s/60)+'m '+(s%60)+'s';
+  document.getElementById('res-avg-time').textContent   = fmt(avgSecs);
+  document.getElementById('res-total-time').textContent = fmt(elapsedSecs);
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+let toastTimer;
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.className = 'show t-'+type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function handleFeedbackLoad(iframe) {
+  if (!iframe || !iframe.src || iframe.src.indexOf('YOUR_GOOGLE_FORM') !== -1) showFeedbackFallback();
+}
+function showFeedbackFallback() {
+  var f = document.getElementById('feedback-iframe');
+  var fb = document.getElementById('feedback-fallback');
+  if (f) f.style.display = 'none';
+  if (fb) fb.style.display = 'block';
+}
+</script>
+</body>
+</html>
