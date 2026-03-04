@@ -1,4 +1,4 @@
-const QUESTIONS_SET_A = [
+const QUESTIONS = [
   {
     "id": "CASE_1",
     "set": "A",
