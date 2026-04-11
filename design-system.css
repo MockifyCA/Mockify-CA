@@ -1,0 +1,543 @@
+﻿:root {
+  --primary: #1a2a4e;
+  --primary-dark: #0f1c38;
+  --primary-mid: #243560;
+  --primary-light: #2f4680;
+  --accent: #d4580a;
+  --accent-soft: #f5e8dc;
+  --gold: #b8860b;
+  --gold-soft: #fdf8ec;
+  --gold-border: #f5e099;
+  --bg: #eef0f4;
+  --card: #ffffff;
+  --text-main: #1a1a2e;
+  --text-light: #6b6b8a;
+  --text-muted: #9a9ab0;
+  --border: #c8cdd8;
+  --border-soft: #dde1ea;
+
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+
+  --radius: 4px;
+  --shadow: 0 1px 4px rgba(26,42,78,.10), 0 1px 2px rgba(26,42,78,.06);
+  --shadow-strong: 0 4px 16px rgba(26,42,78,.12), 0 2px 8px rgba(26,42,78,.07);
+  --transition: all 0.2s ease;
+
+  --font-heading: Georgia, "Times New Roman", serif;
+  --font-body: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body) !important;
+  background: var(--bg) !important;
+  color: var(--text-main) !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.ptb-title,
+.hero-card-title,
+.result-title,
+.auth-title,
+.hero-copy h1,
+.section h2,
+.contact-side h3,
+.mmc-title,
+.feedback-intro-title,
+.result-insight h3 {
+  font-family: var(--font-heading) !important;
+  color: var(--primary) !important;
+  line-height: 1.2;
+}
+
+p,
+.ptb-sub,
+.notice-text,
+.result-meta-text,
+.feedback-intro-sub,
+.section-copy,
+.footer-tagline,
+.contact-note,
+.auth-sub,
+.hero-copy p,
+.feature-card p,
+.about-card p,
+.contact-side p,
+.hero-card p,
+.result-feedback-body p {
+  color: var(--text-light) !important;
+  line-height: 1.75;
+}
+
+.container,
+.site-shell,
+.shell,
+.landing-inner,
+.result-inner,
+.feedback-inner,
+.topbar-inner {
+  width: 100% !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+  box-sizing: border-box !important;
+}
+
+@media (min-width: 1600px) {
+  .container,
+  .site-shell,
+  .shell,
+  .landing-inner,
+  .result-inner,
+  .feedback-inner,
+  .topbar-inner {
+    max-width: 1500px !important;
+  }
+}
+
+.topbar,
+#topbar,
+.hero,
+.footer,
+.global-footer-shell,
+.global-footer {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+#topbar .topbar-top,
+#topbar .topbar-nav {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+#topbar .topbar-top {
+  padding-left: 28px !important;
+  padding-right: 28px !important;
+}
+
+#topbar .topbar-nav {
+  padding-left: 28px !important;
+  padding-right: 28px !important;
+}
+
+.card,
+.hero-card,
+.section,
+.feature-card,
+.about-card,
+.about-point,
+.contact-form,
+.contact-form-shell,
+.contact-card,
+.footer,
+.auth-card,
+.modal-box,
+.info-box,
+.mock-mode-card,
+.result-insight,
+.feedback-intro-card,
+.feedback-form-shell,
+.result-feedback-card,
+.question-card,
+.panel,
+.result-card {
+  background: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.hero-card,
+.section,
+.landing-section,
+.feedback-intro-card,
+.result-feedback-card,
+.result-insight,
+.auth-card,
+.modal-box {
+  border-top: 3px solid var(--accent) !important;
+}
+
+.card,
+.section,
+.feature-card,
+.about-card,
+.about-point,
+.contact-form,
+.contact-form-shell,
+.info-box,
+.feedback-intro-card,
+.feedback-form-shell,
+.result-insight,
+.result-feedback-card,
+.question-card,
+.panel,
+.result-card {
+  padding: var(--space-md);
+}
+
+.feature-card,
+.about-point,
+.info-box,
+.mock-mode-card,
+.question-card,
+.panel,
+.result-card,
+.result-feedback-card {
+  transition: var(--transition) !important;
+}
+
+.feature-card:hover,
+.about-point:hover,
+.info-box:hover,
+.mock-mode-card:hover,
+.question-card:hover,
+.panel:hover,
+.result-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-strong) !important;
+}
+
+.btn-primary,
+.btn-secondary,
+.nav-btn,
+.hero-btn,
+.auth-btn,
+.tb-auth-btn,
+.btn-submit-exam,
+.btn-primary-orange,
+.btn-feedback-inline,
+.feedback-open-btn,
+.btn-start-mock,
+.contact-submit,
+.modal-confirm,
+.modal-cancel,
+.nav-primary,
+.nav-secondary,
+.hero-actions button,
+.question-actions button,
+.result-actions button,
+.btn-nav,
+.btn-mark,
+.mmc-btn {
+  min-height: 40px !important;
+  padding: 0 18px !important;
+  border-radius: var(--radius) !important;
+  font-family: var(--font-body) !important;
+  font-weight: 700 !important;
+  transition: var(--transition) !important;
+}
+
+.btn-primary,
+.hero-btn.primary,
+.auth-btn.primary,
+.tb-auth-btn.primary,
+.btn-submit-exam,
+.btn-primary-orange,
+.btn-feedback-inline,
+.feedback-open-btn,
+.btn-start-mock,
+.contact-submit,
+.modal-confirm,
+.nav-primary {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border: 1px solid var(--accent) !important;
+}
+
+.btn-secondary,
+.hero-btn,
+.auth-btn.secondary,
+.tb-auth-btn,
+.modal-cancel,
+.nav-secondary {
+  background: #fff !important;
+  color: var(--primary) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.btn-primary:hover,
+.hero-btn.primary:hover,
+.auth-btn.primary:hover,
+.tb-auth-btn.primary:hover,
+.btn-submit-exam:hover,
+.btn-primary-orange:hover,
+.btn-feedback-inline:hover,
+.feedback-open-btn:hover,
+.btn-start-mock:hover,
+.contact-submit:hover,
+.modal-confirm:hover,
+.nav-primary:hover,
+.btn-nav:hover,
+.btn-mark:hover,
+.mmc-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+  box-shadow: var(--shadow-strong);
+}
+
+.btn-secondary:hover,
+.hero-btn:hover,
+.auth-btn.secondary:hover,
+.tb-auth-btn:hover,
+.modal-cancel:hover,
+.nav-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.input,
+.auth-input,
+.contact-input,
+.contact-textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  min-height: 42px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  background: #fff !important;
+  color: var(--text-main) !important;
+  transition: var(--transition) !important;
+}
+
+.input:focus,
+.auth-input:focus,
+.contact-input:focus,
+.contact-textarea:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  outline: none !important;
+  border-color: var(--primary-light) !important;
+  box-shadow: 0 0 0 3px rgba(47,70,128,.12) !important;
+}
+
+.topbar,
+#topbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  background: var(--primary-dark) !important;
+  border-bottom: 3px solid var(--accent) !important;
+}
+
+body.exam-mode .global-footer-shell,
+body.exam-mode .global-footer,
+body.exam-mode .landing-footer,
+body.exam-mode footer {
+  display: none !important;
+}
+
+.page-title-bar,
+.modal-header,
+.result-feedback-header,
+.feedback-form-header {
+  background: var(--primary) !important;
+}
+
+.section-label,
+.landing-section-kicker,
+.mode-badge {
+  background: var(--accent-soft) !important;
+  color: var(--accent) !important;
+  border: 1px solid rgba(212,88,10,.16) !important;
+}
+
+.notice-text {
+  background: var(--gold-soft) !important;
+  border: 1px solid var(--gold-border) !important;
+  border-left: 3px solid var(--gold) !important;
+}
+
+.footer {
+  background: var(--primary-dark) !important;
+  color: rgba(255,255,255,.78) !important;
+}
+
+.mockify-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.mockify-brand-logo {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mockify-brand-logo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.mockify-brand-text {
+  min-width: 0;
+}
+
+.mockify-brand-name,
+.mockify-brand-tagline {
+  display: block;
+  margin: 0;
+}
+
+.mockify-brand-name {
+  font-family: var(--font-heading) !important;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: #ffffff !important;
+  white-space: nowrap;
+}
+
+.mockify-brand-tagline {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: normal;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.footer .footer-col h4,
+.footer-bottom,
+.footer-disclaimer {
+  color: rgba(255,255,255,.72) !important;
+}
+
+.footer-link,
+.footer-links a,
+.footer-links button {
+  color: rgba(255,255,255,.78) !important;
+}
+
+.contact-form,
+.auth-body,
+.contact-form-shell form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.contact-grid,
+.contact-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm) !important;
+}
+
+.contact-field.full,
+.contact-field.contact-field-full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .hero-card,
+  .hero,
+  .about-grid,
+  .contact-grid,
+  .contact-form-grid,
+  .footer-grid,
+  .hero-layout,
+  .exam-layout,
+  .score-hero-top {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .container,
+  .site-shell,
+  .shell,
+  .landing-inner,
+  .result-inner,
+  .feedback-inner,
+  .topbar-inner,
+  .topbar-top,
+  .topbar-nav {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    box-sizing: border-box !important;
+  }
+
+  .card,
+  .section,
+  .hero-card,
+  .contact-form,
+  .contact-form-shell,
+  .footer,
+  .auth-card,
+  .modal-box,
+  .question-card,
+  .panel,
+  .result-card {
+    padding: 20px !important;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .nav-btn,
+  .hero-btn,
+  .auth-btn,
+  .tb-auth-btn,
+  .btn-submit-exam,
+  .btn-primary-orange,
+  .btn-feedback-inline,
+  .feedback-open-btn,
+  .btn-start-mock,
+  .contact-submit,
+  .modal-confirm,
+  .modal-cancel,
+  .nav-primary,
+  .nav-secondary,
+  .btn-nav,
+  .btn-mark,
+  .mmc-btn {
+    width: 100% !important;
+  }
+
+  .hero-actions,
+  .top-actions,
+  .auth-actions,
+  .result-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .contact-grid,
+  .contact-form-grid,
+  .feature-grid,
+  .features-grid,
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+}
+
+
